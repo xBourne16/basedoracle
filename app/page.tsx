@@ -29,18 +29,35 @@ export default function Home() {
     return charSum % quotes.length;
   };
 
-  const connectWallet = async () => {
-    if (typeof window !== "undefined" && (window as any).ethereum) {
+  // CÜZDAN BAĞLAMA MANTIĞI DÜZELTİLDİ (Parametre eklendi)
+  const connectWallet = async (walletType: 'metamask' | 'rabby') => {
+    if (typeof window === "undefined") return null;
+    
+    // Tarayıcıdaki varsayılan ethereum objesi
+    let provider = (window as any).ethereum;
+    
+    // Eğer tarayıcıda birden fazla cüzdan varsa (MetaMask + Rabby), seçim yapmalıyız
+    if (provider && provider.providers) {
+      if (walletType === 'metamask') {
+        // MetaMask'ı bul
+        provider = provider.providers.find((p: any) => p.isMetaMask && !p.isRabby);
+      } else if (walletType === 'rabby') {
+        // Rabby'yi bul
+        provider = provider.providers.find((p: any) => p.isRabby);
+      }
+    }
+
+    if (provider) {
       try {
-        const accounts = await (window as any).ethereum.request({ method: "eth_requestAccounts" });
+        const accounts = await provider.request({ method: "eth_requestAccounts" });
         setWalletAddress(accounts[0]);
         setIsModalOpen(false); // Bağlanınca modalı kapat
         return accounts[0];
       } catch (err) {
-        console.error("Wallet connection failed");
+        console.error(`${walletType} connection failed:`, err);
       }
     } else {
-      alert("Please install a wallet like MetaMask or Rabby.");
+      alert(`Please install ${walletType === 'metamask' ? 'MetaMask' : 'Rabby Wallet'}.`);
     }
     return null;
   };
@@ -63,14 +80,18 @@ export default function Home() {
         from: walletAddress,
         data: '0x62734346', 
         value: '0x0',
-        gas: '0x3D090', 
+        gas: '0x3D090', // 250,000 Gaz limiti (Başarısızlık riskini bitirir)
       };
 
+      // 1. İşlemi cüzdana gönder
       const hash = await (window as any).ethereum.request({
         method: 'eth_sendTransaction',
         params: [transactionParameters],
       });
       
+      console.log("İşlem ağa gönderildi, onay bekleniyor:", hash);
+
+      // 2. İşlemin blokzincirinde onaylanmasını bekle (KRİTİK DÜZELTME)
       let receipt = null;
       while (receipt === null) {
         try {
@@ -79,13 +100,14 @@ export default function Home() {
             params: [hash],
           });
           if (receipt === null) {
-            await new Promise(resolve => setTimeout(resolve, 2000));
+            await new Promise(resolve => setTimeout(resolve, 2000)); // 2 saniye bekle
           }
         } catch (e) {
           console.log("Onay bekleniyor...");
         }
       }
 
+      // 3. İşlem başarılı mı kontrol et (status: '0x1' başarılı demektir)
       if (receipt.status === '0x1' || receipt.status === 1) {
         setTxHash(hash);
         const index = getUniqueQuoteIndex(walletAddress, hash);
@@ -126,18 +148,26 @@ export default function Home() {
             <div className="flex flex-col gap-3">
               {[
                 { name: "MetaMask", id: 'metamask', icon: "🦊" },
-                { name: "Rabby Wallet", id: 'rabby', icon: "🐧" },
+                { name: "Rabby Wallet", id: 'rabby', icon: "/rabby_logo.png" }, // Rabby simgesi güncellendi
                 { name: "WalletConnect", id: 'wc', icon: "🌐" }
               ].map((w) => (
                 <button 
                   key={w.id}
-                  onClick={connectWallet}
+                  onClick={() => connectWallet(w.id as any)} // Parametre eklendi
                   className="flex items-center justify-between px-6 py-5 bg-white/[0.03] border border-white/5 rounded-2xl hover:bg-white/10 hover:border-blue-500/50 transition-all group active:scale-95"
                 >
                   <span className="text-[11px] font-bold text-white/70 group-hover:text-white uppercase tracking-[0.2em]">
                     {w.name}
                   </span>
-                  <span className="text-xl grayscale group-hover:grayscale-0 transition-all">{w.icon}</span>
+                  {w.id === 'rabby' ? (
+                    // Rabby simgesi için Image bileşeni kullanılıyor
+                    <div className="relative w-7 h-7">
+                      <Image src={w.icon} alt="Rabby" fill className="object-contain" />
+                    </div>
+                  ) : (
+                    // Diğer simgeler için emoji kullanılıyor
+                    <span className="text-xl grayscale group-hover:grayscale-0 transition-all">{w.icon}</span>
+                  )}
                 </button>
               ))}
             </div>
