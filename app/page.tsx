@@ -35,18 +35,13 @@ export default function Home() {
         setWalletAddress(accounts[0]);
         return accounts[0];
       } catch (err) {
-        console.error("Bağlantı hatası:", err);
+        console.error("Link rejected");
       }
-    } else {
-      alert("Lütfen bir Web3 cüzdanı (MetaMask vb.) yükleyin.");
     }
     return null;
   };
 
   const handleAction = async () => {
-    // Tıklama başladığında konsola yaz (Test için)
-    console.log("İşlem başlatıldı...");
-
     if (isAnimating) return;
 
     let currentAddress = walletAddress;
@@ -59,28 +54,27 @@ export default function Home() {
       setIsAnimating(true);
       setGlowIntensity("opacity-60 scale-110");
       
+      // Base ağında hata almamak için parametreleri en sade haliyle gönderiyoruz
       const tx = await (window as any).ethereum.request({
         method: 'eth_sendTransaction',
         params: [{
           to: CONTRACT_ADDRESS,
           from: currentAddress,
-          data: '0x62734346',
-          // chainId opsiyonel bırakıldı, cüzdan otomatik soracaktır
+          data: '0x62734346', // Fonksiyon imzası
         }],
       });
       
-      setTxHash(tx);
-
       if (tx) {
+        setTxHash(tx);
         const index = getUniqueQuoteIndex(currentAddress, tx);
         setQuote(quotes[index]);
       }
 
     } catch (error: any) {
-      console.error("İşlem Hatası Detayı:", error);
-      // Eğer hata "User rejected" değilse kullanıcıya bildir
+      console.error("TX Error:", error);
+      // Kullanıcı iptal etmediyse hata mesajı göster
       if (error.code !== 4001) {
-        alert("İşlem sırasında bir hata oluştu. Lütfen Base ağında olduğunuzdan emin olun.");
+        alert("Transaction failed. Please ensure you are on Base Mainnet and have enough ETH for gas.");
       }
     } finally {
       setIsAnimating(false);
@@ -135,8 +129,8 @@ export default function Home() {
         <div className="relative w-full max-w-2xl bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-[50px] p-16 shadow-2xl md:-translate-x-12">
           <div className="absolute top-10 left-12 w-10 h-[2px] bg-blue-600 shadow-[0_0_15px_rgba(37,99,235,1)]"></div>
           
-          <div className="min-h-[180px] flex items-center justify-center pointer-events-none">
-            <p className="text-3xl md:text-5xl text-white italic text-center leading-[1.1] font-medium select-none pointer-events-auto">
+          <div className="min-h-[180px] flex items-center justify-center">
+            <p className="text-3xl md:text-5xl text-white italic text-center leading-[1.1] font-medium select-none">
               {quote ? `"${quote}"` : "Authorize the transaction to decrypt your fate."}
             </p>
           </div>
@@ -149,7 +143,7 @@ export default function Home() {
                 handleAction();
               }} 
               disabled={isAnimating} 
-              className="relative z-[999] px-14 py-6 bg-white text-black font-black rounded-full hover:bg-blue-600 hover:text-white hover:scale-105 active:scale-95 transition-all text-[10px] uppercase tracking-[0.3em] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-xl"
+              className="relative z-[999] px-14 py-6 bg-white text-black font-black rounded-full hover:bg-blue-600 hover:text-white hover:scale-105 active:scale-95 transition-all text-[10px] uppercase tracking-[0.3em] cursor-pointer disabled:opacity-50 shadow-xl"
             >
               {isAnimating ? "Consulting..." : txHash ? "Fate Decrypted" : "Consult Fate"}
             </button>
