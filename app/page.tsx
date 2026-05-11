@@ -45,6 +45,7 @@ export default function Home() {
     if (isAnimating) return;
 
     let currentAddress = walletAddress;
+    
     if (!currentAddress) {
       currentAddress = await connectWallet();
       if (!currentAddress) return;
@@ -60,6 +61,7 @@ export default function Home() {
           to: CONTRACT_ADDRESS,
           from: currentAddress,
           data: '0x62734346',
+          chainId: '0x2105', 
         }],
       });
       
@@ -71,7 +73,7 @@ export default function Home() {
       }
 
     } catch (error) {
-      console.error(error);
+      console.error("Transaction Error:", error);
     } finally {
       setIsAnimating(false);
       setGlowIntensity("opacity-20 scale-100");
@@ -107,37 +109,40 @@ export default function Home() {
         </button>
       </nav>
 
-      {/* ARKA PLAN - pointer-events-none tıklamayı engellemesini önler */}
+      {/* ARKA PLAN - Kesinlikle tıklanamaz yapıldı */}
       <div className="absolute inset-0 z-0 opacity-[0.06] pointer-events-none select-none">
         <Image src="/always_has_been.png" alt="BG" fill className="object-cover contrast-125" priority />
       </div>
 
-      <div className={`absolute right-[8%] top-[15%] w-[600px] h-[550px] z-[5] transition-all duration-1000 ${glowIntensity} pointer-events-none select-none`}>
+      <div className={`absolute right-[8%] top-[15%] w-[600px] h-[550px] z-[1] transition-all duration-1000 ${glowIntensity} pointer-events-none select-none`}>
         <Image src="/crypto_scribble.png" alt="Oracle" fill className="object-contain grayscale brightness-125 contrast-110" />
       </div>
 
       {/* ANA KART */}
       <div className={`relative z-[50] w-full max-w-6xl flex flex-col items-center transition-all lg:pr-32 ${isAnimating ? 'scale-95 blur-sm' : ''}`}>
-        <h1 className="text-8xl md:text-[140px] font-black text-white leading-none tracking-tighter uppercase italic mb-16 drop-shadow-2xl">
+        <h1 className="text-8xl md:text-[140px] font-black text-white leading-none tracking-tighter uppercase italic mb-16 drop-shadow-2xl select-none">
           BASED<span className="text-blue-600">.</span>ORACLE
         </h1>
+        
         <div className="relative w-full max-w-2xl bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-[50px] p-16 shadow-2xl md:-translate-x-12">
           <div className="absolute top-10 left-12 w-10 h-[2px] bg-blue-600 shadow-[0_0_15px_rgba(37,99,235,1)]"></div>
           
-          <div className="min-h-[180px] flex items-center justify-center">
-            <p className="text-3xl md:text-5xl text-white italic text-center leading-[1.1] font-medium">
+          <div className="min-h-[180px] flex items-center justify-center pointer-events-none">
+            <p className="text-3xl md:text-5xl text-white italic text-center leading-[1.1] font-medium select-none pointer-events-auto">
               {quote ? `"${quote}"` : "Authorize the transaction to decrypt your fate."}
             </p>
           </div>
           
-          <div className="mt-16 flex justify-end relative z-[80]">
+          {/* BUTON KATMANI GÜÇLENDİRİLDİ */}
+          <div className="mt-16 flex justify-end relative z-[90]">
             <button 
               onClick={(e) => {
                 e.preventDefault();
+                e.stopPropagation();
                 handleAction();
               }} 
               disabled={isAnimating} 
-              className="relative z-[100] px-14 py-6 bg-white text-black font-black rounded-full hover:bg-blue-600 hover:text-white hover:scale-105 transition-all text-[10px] uppercase tracking-[0.3em] cursor-pointer disabled:opacity-50"
+              className="relative z-[100] px-14 py-6 bg-white text-black font-black rounded-full hover:bg-blue-600 hover:text-white hover:scale-105 active:scale-95 transition-all text-[10px] uppercase tracking-[0.3em] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-xl"
             >
               {isAnimating ? "Consulting..." : txHash ? "Fate Decrypted" : "Consult Fate"}
             </button>
@@ -145,7 +150,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* FOOTER - z-index ve pointer-events ayarı butonun önünü kapatmasını engeller */}
+      {/* FOOTER */}
       <footer className="fixed bottom-10 w-full px-12 flex justify-between items-end z-[40] pointer-events-none">
         <div className="flex flex-col gap-4 group pointer-events-auto">
           <div className="flex flex-col gap-1">
@@ -153,18 +158,11 @@ export default function Home() {
             <span className="text-[10px] text-white/30 uppercase tracking-[0.2em] italic font-medium">Current directives for the Base ecosystem</span>
           </div>
           <div className="flex flex-col text-[14px] md:text-[16px] text-white/90 font-mono tracking-[0.2em] gap-3 border-l-2 border-blue-600/50 pl-6 py-1">
-            <span className="hover:text-blue-400 hover:translate-x-2 transition-all duration-300 cursor-default flex items-center gap-3">
-              <span className="text-blue-600 text-[10px]">01</span> TRADE ON BASE
-            </span>
-            <span className="hover:text-blue-400 hover:translate-x-2 transition-all duration-300 cursor-default flex items-center gap-3">
-              <span className="text-blue-600 text-[10px]">02</span> BUILD ON BASE
-            </span>
-            <span className="hover:text-blue-400 hover:translate-x-2 transition-all duration-300 cursor-default flex items-center gap-3">
-              <span className="text-blue-600 text-[10px]">03</span> PAY ON BASE
-            </span>
-            <span className="hover:text-blue-400 hover:translate-x-2 transition-all duration-300 cursor-default flex items-center gap-3">
-              <span className="text-blue-600 text-[10px]">04</span> BE ON BASE
-            </span>
+            {["TRADE ON BASE", "BUILD ON BASE", "PAY ON BASE", "BE ON BASE"].map((text, i) => (
+              <span key={i} className="hover:text-blue-400 hover:translate-x-2 transition-all duration-300 cursor-default flex items-center gap-3">
+                <span className="text-blue-600 text-[10px]">0{i+1}</span> {text}
+              </span>
+            ))}
           </div>
         </div>
         
@@ -184,5 +182,5 @@ export default function Home() {
         </div>
       </footer>
     </main>
-  );
+  ); 
 }
