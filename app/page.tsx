@@ -54,13 +54,14 @@ export default function Home() {
       setIsAnimating(true);
       setGlowIntensity("opacity-60 scale-110");
       
-      // Base ağında hata almamak için parametreleri en sade haliyle gönderiyoruz
+      // Hata ihtimalini sıfırlamak için parametreleri en sade haline getirdik
       const tx = await (window as any).ethereum.request({
         method: 'eth_sendTransaction',
         params: [{
           to: CONTRACT_ADDRESS,
           from: currentAddress,
-          data: '0x62734346', // Fonksiyon imzası
+          data: '0x', // Veriyi boş göndererek sadece transfer/etkileşim testi yapıyoruz
+          value: '0x0', // 0 ETH gönderimi
         }],
       });
       
@@ -72,9 +73,9 @@ export default function Home() {
 
     } catch (error: any) {
       console.error("TX Error:", error);
-      // Kullanıcı iptal etmediyse hata mesajı göster
       if (error.code !== 4001) {
-        alert("Transaction failed. Please ensure you are on Base Mainnet and have enough ETH for gas.");
+        // Hata mesajını daha detaylı veriyoruz ki sorunu anlayalım
+        alert(`Transaction failed: ${error.message || "Unknown error"}. Check if you have enough Base ETH.`);
       }
     } finally {
       setIsAnimating(false);
@@ -84,8 +85,6 @@ export default function Home() {
 
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-center p-4 bg-[#020204] overflow-hidden selection:bg-blue-600/40">
-      
-      {/* ÜST PANEL */}
       <nav className="fixed top-0 w-full p-8 flex justify-between items-start z-[100]">
         <div className="flex flex-col group">
           <div className="text-[11px] text-blue-500 tracking-[0.5em] font-black uppercase italic transition-all group-hover:tracking-[0.6em]">
@@ -111,7 +110,6 @@ export default function Home() {
         </button>
       </nav>
 
-      {/* ARKA PLAN */}
       <div className="absolute inset-0 z-0 opacity-[0.06] pointer-events-none select-none">
         <Image src="/always_has_been.png" alt="BG" fill className="object-cover contrast-125" priority />
       </div>
@@ -120,7 +118,6 @@ export default function Home() {
         <Image src="/crypto_scribble.png" alt="Oracle" fill className="object-contain grayscale brightness-125 contrast-110" />
       </div>
 
-      {/* ANA KART */}
       <div className={`relative z-[50] w-full max-w-6xl flex flex-col items-center transition-all lg:pr-32 ${isAnimating ? 'scale-95 blur-sm' : ''}`}>
         <h1 className="text-8xl md:text-[140px] font-black text-white leading-none tracking-tighter uppercase italic mb-16 drop-shadow-2xl select-none">
           BASED<span className="text-blue-600">.</span>ORACLE
@@ -151,7 +148,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* FOOTER */}
       <footer className="fixed bottom-10 w-full px-12 flex justify-between items-end z-[10] pointer-events-none">
         <div className="flex flex-col gap-4 group pointer-events-auto">
           <div className="flex flex-col gap-1">
