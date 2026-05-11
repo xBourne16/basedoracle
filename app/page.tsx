@@ -109,7 +109,7 @@ export default function Home() {
         </button>
       </nav>
 
-      {/* ARKA PLAN - Kesinlikle tıklanamaz yapıldı */}
+      {/* ARKA PLAN */}
       <div className="absolute inset-0 z-0 opacity-[0.06] pointer-events-none select-none">
         <Image src="/always_has_been.png" alt="BG" fill className="object-cover contrast-125" priority />
       </div>
@@ -127,14 +127,14 @@ export default function Home() {
         <div className="relative w-full max-w-2xl bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-[50px] p-16 shadow-2xl md:-translate-x-12">
           <div className="absolute top-10 left-12 w-10 h-[2px] bg-blue-600 shadow-[0_0_15px_rgba(37,99,235,1)]"></div>
           
-          <div className="min-h-[180px] flex items-center justify-center pointer-events-none">
-            <p className="text-3xl md:text-5xl text-white italic text-center leading-[1.1] font-medium select-none pointer-events-auto">
+          <div className="min-h-[180px] flex items-center justify-center">
+            <p className="text-3xl md:text-5xl text-white italic text-center leading-[1.1] font-medium select-none">
               {quote ? `"${quote}"` : "Authorize the transaction to decrypt your fate."}
             </p>
           </div>
           
-          {/* BUTON KATMANI GÜÇLENDİRİLDİ */}
-          <div className="mt-16 flex justify-end relative z-[90]">
+          {/* BUTON KATMANI DÜZENLEMESİ (z-9999 ve e.stopPropagation eklendi) */}
+          <div className="mt-16 flex justify-end relative z-[80]">
             <button 
               onClick={(e) => {
                 e.preventDefault();
@@ -142,7 +142,8 @@ export default function Home() {
                 handleAction();
               }} 
               disabled={isAnimating} 
-              className="relative z-[100] px-14 py-6 bg-white text-black font-black rounded-full hover:bg-blue-600 hover:text-white hover:scale-105 active:scale-95 transition-all text-[10px] uppercase tracking-[0.3em] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-xl"
+              style={{ pointerEvents: 'auto' }}
+              className="relative z-[9999] px-14 py-6 bg-white text-black font-black rounded-full hover:bg-blue-600 hover:text-white hover:scale-105 active:scale-95 transition-all text-[10px] uppercase tracking-[0.3em] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-xl"
             >
               {isAnimating ? "Consulting..." : txHash ? "Fate Decrypted" : "Consult Fate"}
             </button>
@@ -150,8 +151,8 @@ export default function Home() {
         </div>
       </div>
 
-      {/* FOOTER */}
-      <footer className="fixed bottom-10 w-full px-12 flex justify-between items-end z-[40] pointer-events-none">
+      {/* FOOTER - pointer-events-none butona giden yolu açar */}
+      <footer className="fixed bottom-10 w-full px-12 flex justify-between items-end z-[10] pointer-events-none">
         <div className="flex flex-col gap-4 group pointer-events-auto">
           <div className="flex flex-col gap-1">
             <span className="text-[13px] text-blue-500 font-black uppercase tracking-[0.4em]">Weekend Protocol:</span>
