@@ -35,7 +35,7 @@ export default function Home() {
         setWalletAddress(accounts[0]);
         return accounts[0];
       } catch (err) {
-        console.error("Bağlantı reddedildi.");
+        console.error("Wallet connection failed");
       }
     }
     return null;
@@ -54,30 +54,51 @@ export default function Home() {
       setIsAnimating(true);
       setGlowIntensity("opacity-60 scale-110");
       
-      // Gaz limiti hatasını çözen parametreler
       const transactionParameters = {
         to: CONTRACT_ADDRESS,
         from: currentAddress,
         data: '0x62734346', 
         value: '0x0',
-        gas: '0x186A0', // 100,000 gas limiti (MetaMask'ın hesaplayamadığı durumlarda zorunlu)
+        gas: '0x3D090', // 250,000 Gaz limiti (Başarısızlık riskini bitirir)
       };
 
-      const tx = await (window as any).ethereum.request({
+      // 1. İşlemi cüzdana gönder
+      const hash = await (window as any).ethereum.request({
         method: 'eth_sendTransaction',
         params: [transactionParameters],
       });
       
-      if (tx) {
-        setTxHash(tx);
-        const index = getUniqueQuoteIndex(currentAddress, tx);
+      console.log("İşlem ağa gönderildi, onay bekleniyor:", hash);
+
+      // 2. İşlemin blokzincirinde onaylanmasını bekle (KRİTİK DÜZELTME)
+      let receipt = null;
+      while (receipt === null) {
+        try {
+          receipt = await (window as any).ethereum.request({
+            method: 'eth_getTransactionReceipt',
+            params: [hash],
+          });
+          if (receipt === null) {
+            await new Promise(resolve => setTimeout(resolve, 2000)); // 2 saniye bekle
+          }
+        } catch (e) {
+          console.log("Onay bekleniyor...");
+        }
+      }
+
+      // 3. İşlem başarılı mı kontrol et (status: '0x1' başarılı demektir)
+      if (receipt.status === '0x1' || receipt.status === 1) {
+        setTxHash(hash);
+        const index = getUniqueQuoteIndex(currentAddress, hash);
         setQuote(quotes[index]);
+      } else {
+        throw new Error("Transaction failed on-chain.");
       }
 
     } catch (error: any) {
-      console.error("TX Hatası:", error);
+      console.error("Hata:", error);
       if (error.code !== 4001) {
-        alert(`Oracle Error: ${error.message || "Lütfen Base ağında olduğunuzdan emin olun."}`);
+        alert("Transaction failed! Please check your Base ETH balance and network.");
       }
     } finally {
       setIsAnimating(false);
@@ -87,8 +108,6 @@ export default function Home() {
 
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-center p-4 bg-[#020204] overflow-hidden selection:bg-blue-600/40">
-      
-      {/* ÜST PANEL */}
       <nav className="fixed top-0 w-full p-8 flex justify-between items-start z-[100]">
         <div className="flex flex-col group">
           <div className="text-[11px] text-blue-500 tracking-[0.5em] font-black uppercase italic transition-all group-hover:tracking-[0.6em]">
@@ -114,7 +133,6 @@ export default function Home() {
         </button>
       </nav>
 
-      {/* ARKA PLAN */}
       <div className="absolute inset-0 z-0 opacity-[0.06] pointer-events-none select-none">
         <Image src="/always_has_been.png" alt="BG" fill className="object-cover contrast-125" priority />
       </div>
@@ -123,7 +141,6 @@ export default function Home() {
         <Image src="/crypto_scribble.png" alt="Oracle" fill className="object-contain grayscale brightness-125 contrast-110" />
       </div>
 
-      {/* ANA KART */}
       <div className={`relative z-[50] w-full max-w-6xl flex flex-col items-center transition-all lg:pr-32 ${isAnimating ? 'scale-95 blur-sm' : ''}`}>
         <h1 className="text-8xl md:text-[140px] font-black text-white leading-none tracking-tighter uppercase italic mb-16 drop-shadow-2xl select-none">
           BASED<span className="text-blue-600">.</span>ORACLE
@@ -134,11 +151,10 @@ export default function Home() {
           
           <div className="min-h-[180px] flex items-center justify-center">
             <p className="text-3xl md:text-5xl text-white italic text-center leading-[1.1] font-medium select-none">
-              {quote ? `"${quote}"` : "Authorize the transaction to decrypt your fate."}
+              {quote ? `"${quote}"` : isAnimating ? "Witnessing the blockchain..." : "Authorize the transaction to decrypt your fate."}
             </p>
           </div>
           
-          {/* BUTON: Tıklamayı garanti altına alan yüksek z-index */}
           <div className="mt-16 flex justify-end relative z-[80]">
             <button 
               onClick={(e) => {
@@ -155,7 +171,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* FOOTER: pointer-events-none ile butonun önünü kapatması engellendi */}
       <footer className="fixed bottom-10 w-full px-12 flex justify-between items-end z-[10] pointer-events-none">
         <div className="flex flex-col gap-4 group pointer-events-auto">
           <div className="flex flex-col gap-1">
