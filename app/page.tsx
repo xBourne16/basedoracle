@@ -604,21 +604,49 @@ export default function Home() {
             <div className="flex flex-col text-[14px] md:text-[16px] text-white/90 font-mono tracking-[0.2em] gap-3 border-l-2 border-blue-600/50 pl-6 py-1">
 
               {[
-                "TRADE ON BASE",
-                "BUILD ON BASE",
-                "PAY ON BASE",
-                "BE ON BASE",
-              ].map((text, i) => (
-                <span
-                  key={i}
-                  className="hover:text-blue-400 hover:translate-x-2 transition-all duration-300"
-                >
-                  <span className="text-blue-600 text-[10px]">
-                    0{i + 1}
-                  </span>{" "}
-                  {text}
-                </span>
-              ))}
+  {
+    text: "TRADE ON BASE",
+    href: null,
+  },
+  {
+    text: "BUILD ON BASE",
+    href: null,
+  },
+  {
+    text: "PAY ON BASE",
+    href: null,
+  },
+  {
+    text: "BE ON BASE.APP",
+    href:
+      "https://base.app/invite/ozzbourne/YRQ8S104",
+  },
+].map((item, i) =>
+  item.href ? (
+    <a
+      key={i}
+      href={item.href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="hover:text-blue-400 hover:translate-x-2 transition-all duration-300"
+    >
+      <span className="text-blue-600 text-[10px]">
+        0{i + 1}
+      </span>{" "}
+      {item.text}
+    </a>
+  ) : (
+    <span
+      key={i}
+      className="hover:text-blue-400 hover:translate-x-2 transition-all duration-300"
+    >
+      <span className="text-blue-600 text-[10px]">
+        0{i + 1}
+      </span>{" "}
+      {item.text}
+    </span>
+  )
+)}
 
             </div>
           </div>
