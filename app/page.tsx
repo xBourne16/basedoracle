@@ -513,21 +513,55 @@ export default function Home() {
 
           <div className="absolute top-10 left-12 w-10 h-[2px] bg-blue-600 shadow-[0_0_15px_rgba(37,99,235,1)]"></div>
 
-          <div className="min-h-[180px] flex items-center justify-center">
+          <div className="min-h-[260px] flex flex-col items-center justify-center text-center">
 
-            <p className="text-3xl md:text-5xl text-white italic text-center leading-[1.1] font-medium">
+  {/* DAILY TITLE */}
+  {quote && (
+    <span className="mb-6 text-[11px] uppercase tracking-[0.45em] text-blue-400 font-black italic">
+      Your Quote Of The Day
+    </span>
+  )}
 
-              {quote
-                ? `"${quote}"`
-                : isAnimating
-                ? "Witnessing the blockchain..."
-                : cooldown > 0
-                ? "The Oracle sleeps..."
-                : "Authorize the transaction to decrypt your fate."}
+  {/* QUOTE */}
+  <p className="text-3xl md:text-5xl text-white italic text-center leading-[1.1] font-medium">
 
-            </p>
-          </div>
+    {quote
+      ? `"${quote}"`
+      : isAnimating
+      ? "Witnessing the blockchain..."
+      : cooldown > 0
+      ? "The Oracle sleeps..."
+      : "Authorize the transaction to decrypt your fate."}
 
+  </p>
+
+  {/* LUCKY NUMBER */}
+  {quote && walletAddress && (
+    <div className="mt-10 flex flex-col items-center">
+
+      <span className="text-[10px] uppercase tracking-[0.4em] text-white/30 mb-3 italic">
+        Your Lucky Number Today
+      </span>
+
+      <div className="px-8 py-3 rounded-full border border-blue-500/30 bg-blue-500/10 backdrop-blur-xl shadow-[0_0_30px_rgba(37,99,235,0.2)]">
+
+        <span className="text-3xl md:text-4xl font-black text-blue-400 tracking-[0.15em]">
+          {(
+            walletAddress
+              .split("")
+              .reduce(
+                (acc, char) =>
+                  acc + char.charCodeAt(0),
+                0
+              ) % 999
+          ) + 1}
+        </span>
+
+      </div>
+    </div>
+  )}
+
+</div>
           {/* COOL TIMER */}
           {cooldown > 0 && (
             <div className="flex flex-col items-center justify-center mb-10 animate-pulse">
