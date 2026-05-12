@@ -14,7 +14,7 @@ export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeProvider, setActiveProvider] = useState<any>(null);
 
-  // YENİ VE GÜNCEL KONTRAT ADRESİN
+  // YENİ KONTRAST ADRESİN
   const CONTRACT_ADDRESS = "0x2C53bB6fD360dE621C9319c7Cb441f3AEBE8325b";
 
   useEffect(() => {
@@ -42,6 +42,7 @@ export default function Home() {
 
     let provider: any = null;
 
+    // Cüzdan Çakışma Önleyici
     if (eth.providers?.length) {
       if (walletType === 'rabby') {
         provider = eth.providers.find((p: any) => p.isRabby);
@@ -82,9 +83,9 @@ export default function Home() {
       const txParameters = {
         to: CONTRACT_ADDRESS,
         from: walletAddress,
-        data: '0x45850a1c', // consult() fonksiyonun için doğru ID
+        data: '0x45850a1c', // consult() fonksiyonu için doğru hex
         value: '0x0',
-        gas: '0x493E0',     // 300,000 Gas (Hata almanı engeller)
+        gas: '0x7A120',      // 500,000 Gas (Simülasyon hatalarını aşmak için yüksek tutuldu)
       };
 
       const hash = await provider.request({
@@ -94,6 +95,10 @@ export default function Home() {
       
       setTxHash(hash);
 
+      // İşlem onayını beklemeden direkt kaderi göster (Kullanıcı deneyimi için)
+      setQuote(quotes[getUniqueQuoteIndex(walletAddress, hash)]);
+
+      // Arka planda onayı takip et
       let receipt = null;
       while (receipt === null) {
         receipt = await provider.request({
@@ -102,14 +107,10 @@ export default function Home() {
         });
         if (!receipt) await new Promise(r => setTimeout(r, 2000));
       }
-
-      if (receipt && (receipt.status === '0x1' || receipt.status === 1)) {
-        setQuote(quotes[getUniqueQuoteIndex(walletAddress, hash)]);
-      }
     } catch (error: any) {
       console.error("TX Error:", error);
       if (error.code !== 4001) {
-        alert("Transaction failed. Check your Base ETH balance.");
+        alert("Transaction failed. Make sure you are on Base Mainnet.");
       }
     } finally {
       setIsAnimating(false);
@@ -120,8 +121,9 @@ export default function Home() {
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-center p-4 bg-[#020204] overflow-hidden selection:bg-blue-600/40">
       
+      {/* WALLET MODAL */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl">
           <div className="w-full max-w-sm bg-[#0a0a0c] border border-white/10 rounded-[32px] p-8 shadow-2xl relative">
             <button onClick={() => setIsModalOpen(false)} className="absolute top-6 right-6 text-white/40 hover:text-white transition-colors">✕</button>
             <h2 className="text-[12px] font-black text-white uppercase tracking-[0.4em] mb-10 text-center italic">Connect Soul</h2>
@@ -139,6 +141,7 @@ export default function Home() {
         </div>
       )}
 
+      {/* NAV */}
       <nav className="fixed top-0 w-full p-8 flex justify-between items-start z-[100]">
         <div className="flex flex-col group">
           <div className="text-[11px] text-blue-500 tracking-[0.5em] font-black uppercase italic transition-all group-hover:tracking-[0.6em]">
@@ -155,7 +158,7 @@ export default function Home() {
 
         <button 
           onClick={() => setIsModalOpen(true)} 
-          className="group relative flex items-center gap-3 px-7 py-3 bg-white/[0.04] backdrop-blur-2xl border border-white/10 rounded-full transition-all duration-500 hover:border-blue-500/60 hover:bg-white/[0.1] active:scale-95 shadow-[0_0_20px_rgba(59,130,246,0.05)] z-[110]"
+          className="group relative flex items-center gap-3 px-7 py-3 bg-white/[0.04] backdrop-blur-2xl border border-white/10 rounded-full transition-all duration-500 hover:border-blue-500/60 hover:bg-white/[0.1] active:scale-95 z-[110]"
         >
           <div className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.8)] animate-pulse"></div>
           <span className="text-[11px] font-black text-white uppercase tracking-[0.25em]">
@@ -221,9 +224,6 @@ export default function Home() {
           </div>
           <a href="https://x.com/np0int" target="_blank" rel="noopener noreferrer" className="group flex items-center gap-3 bg-white/[0.02] hover:bg-white/[0.08] border border-white/5 px-6 py-2.5 rounded-full transition-all duration-500 backdrop-blur-xl translate-x-[-10px]">
             <span className="text-[10px] text-white/40 font-mono tracking-[0.3em] group-hover:text-blue-400 uppercase transition-colors">@np0int</span>
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="white" className="opacity-40 group-hover:opacity-100 group-hover:fill-blue-400">
-              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
-            </svg>
           </a>
         </div>
       </footer>
