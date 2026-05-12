@@ -24,7 +24,10 @@ export default function Home() {
     "0x2C53bB6fD360dE621C9319c7Cb441f3AEBE8325b";
 
   // ABI
-  const abi = ["function consult() public"];
+  const abi = [
+    "function consult() public",
+    "function getRemainingTime(address user) view returns (uint256)"
+  ];
 
   useEffect(() => {
     const hour = new Date().getHours();
@@ -38,43 +41,58 @@ export default function Home() {
     else setGreeting("The Midnight Watch");
   }, []);
 
-  // LIVE COOLDOWN TIMER
+  // LIVE BLOCKCHAIN COOLDOWN TIMER
   useEffect(() => {
     if (!walletAddress) return;
 
-    const storageKey =
-      `oracle_last_tx_${walletAddress}`;
+    const fetchCooldown = async () => {
+      try {
+        const injectedProvider =
+          activeProvider ||
+          (window as any).ethereum;
 
-    const interval = setInterval(() => {
-      const lastTxTime =
-        localStorage.getItem(storageKey);
+        if (!injectedProvider) return;
 
-      if (!lastTxTime) {
-        setCooldown(0);
-        return;
+        const provider =
+          new ethers.BrowserProvider(
+            injectedProvider
+          );
+
+        const contract =
+          new ethers.Contract(
+            CONTRACT_ADDRESS,
+            abi,
+            provider
+          );
+
+        const remaining =
+          await contract.getRemainingTime(
+            walletAddress
+          );
+
+        setCooldown(
+          Number(remaining) * 1000
+        );
+
+      } catch (err) {
+        console.error(
+          "Cooldown fetch error:",
+          err
+        );
       }
+    };
 
-      const now = Date.now();
+    fetchCooldown();
 
-      const diff =
-        now - Number(lastTxTime);
-
-      const hours24 =
-        24 * 60 * 60 * 1000;
-
-      const remaining =
-        hours24 - diff;
-
-      if (remaining <= 0) {
-        setCooldown(0);
-      } else {
-        setCooldown(remaining);
-      }
-    }, 1000);
+    const interval =
+      setInterval(fetchCooldown, 1000);
 
     return () => clearInterval(interval);
 
-  }, [walletAddress]);
+  }, [
+    walletAddress,
+    activeProvider
+  ]);
 
   const getUniqueQuoteIndex = (
     address: string,
@@ -180,38 +198,15 @@ export default function Home() {
 
   const handleAction = async () => {
 
-    // 24H LIMIT CHECK
-    const storageKey =
-      `oracle_last_tx_${walletAddress}`;
-
-    const lastTxTime =
-      localStorage.getItem(storageKey);
-
-    if (lastTxTime) {
-
-      const now = Date.now();
-
-      const diff =
-        now - Number(lastTxTime);
-
-      const hours24 =
-        24 * 60 * 60 * 1000;
-
-      if (diff < hours24) {
-
-        const remaining =
-          hours24 - diff;
-
-        setCooldown(remaining);
-
-        return;
-      }
-    }
-
     if (isAnimating) return;
 
     if (!walletAddress) {
       setIsModalOpen(true);
+      return;
+    }
+
+    // BLOCKCHAIN COOLDOWN CHECK
+    if (cooldown > 0) {
       return;
     }
 
@@ -223,17 +218,55 @@ export default function Home() {
         activeProvider ||
         (window as any).ethereum;
 
+      if (!injectedProvider) {
+        alert("Wallet provider not found.");
+        return;
+      }
+
       // BASE MAINNET CHECK
       const chainId =
         await injectedProvider.request({
           method: "eth_chainId",
         });
 
+      // BASE MAINNET
       if (chainId !== "0x2105") {
-        alert(
-          "Please switch to Base Mainnet."
-        );
-        return;
+        try {
+          await injectedProvider.request({
+            method: "wallet_switchEthereumChain",
+            params: [{ chainId: "0x2105" }],
+          });
+        } catch (switchError: any) {
+
+          // BASE NETWORK EKLE
+          if (switchError.code === 4902) {
+            await injectedProvider.request({
+              method: "wallet_addEthereumChain",
+              params: [
+                {
+                  chainId: "0x2105",
+                  chainName: "Base",
+                  nativeCurrency: {
+                    name: "Ethereum",
+                    symbol: "ETH",
+                    decimals: 18,
+                  },
+                  rpcUrls: [
+                    "https://mainnet.base.org",
+                  ],
+                  blockExplorerUrls: [
+                    "https://basescan.org",
+                  ],
+                },
+              ],
+            });
+          } else {
+            alert(
+              "Please switch to Base Mainnet."
+            );
+            return;
+          }
+        }
       }
 
       const provider =
@@ -267,9 +300,14 @@ export default function Home() {
 
       await tx.wait();
 
-      localStorage.setItem(
-        storageKey,
-        Date.now().toString()
+      // REFRESH COOLDOWN
+      const remaining =
+        await contract.getRemainingTime(
+          walletAddress
+        );
+
+      setCooldown(
+        Number(remaining) * 1000
       );
 
     } catch (error: any) {
@@ -277,7 +315,7 @@ export default function Home() {
 
       if (error.code !== 4001) {
         alert(
-          "Transaction failed. Make sure you are on Base Mainnet."
+          "Transaction failed or cooldown active."
         );
       }
     } finally {
@@ -515,53 +553,54 @@ export default function Home() {
 
           <div className="min-h-[260px] flex flex-col items-center justify-center text-center">
 
-  {/* DAILY TITLE */}
-  {quote && (
-    <span className="mb-6 text-[11px] uppercase tracking-[0.45em] text-blue-400 font-black italic">
-      Your Quote Of The Day
-    </span>
-  )}
+            {/* DAILY TITLE */}
+            {quote && (
+              <span className="mb-6 text-[11px] uppercase tracking-[0.45em] text-blue-400 font-black italic">
+                Your Quote Of The Day
+              </span>
+            )}
 
-  {/* QUOTE */}
-  <p className="text-3xl md:text-5xl text-white italic text-center leading-[1.1] font-medium">
+            {/* QUOTE */}
+            <p className="text-3xl md:text-5xl text-white italic text-center leading-[1.1] font-medium">
 
-    {quote
-      ? `"${quote}"`
-      : isAnimating
-      ? "Witnessing the blockchain..."
-      : cooldown > 0
-      ? "The Oracle sleeps..."
-      : "Authorize the transaction to decrypt your fate."}
+              {quote
+                ? `"${quote}"`
+                : isAnimating
+                ? "Witnessing the blockchain..."
+                : cooldown > 0
+                ? "The Oracle sleeps..."
+                : "Authorize the transaction to decrypt your fate."}
 
-  </p>
+            </p>
 
-  {/* LUCKY NUMBER */}
-  {quote && walletAddress && (
-    <div className="mt-10 flex flex-col items-center">
+            {/* LUCKY NUMBER */}
+            {quote && walletAddress && (
+              <div className="mt-10 flex flex-col items-center">
 
-      <span className="text-[10px] uppercase tracking-[0.4em] text-white/30 mb-3 italic">
-        Your Lucky Number Today
-      </span>
+                <span className="text-[10px] uppercase tracking-[0.4em] text-white/30 mb-3 italic">
+                  Your Lucky Number Today
+                </span>
 
-      <div className="px-8 py-3 rounded-full border border-blue-500/30 bg-blue-500/10 backdrop-blur-xl shadow-[0_0_30px_rgba(37,99,235,0.2)]">
+                <div className="px-8 py-3 rounded-full border border-blue-500/30 bg-blue-500/10 backdrop-blur-xl shadow-[0_0_30px_rgba(37,99,235,0.2)]">
 
-        <span className="text-3xl md:text-4xl font-black text-blue-400 tracking-[0.15em]">
-          {(
-            walletAddress
-              .split("")
-              .reduce(
-                (acc, char) =>
-                  acc + char.charCodeAt(0),
-                0
-              ) % 999
-          ) + 1}
-        </span>
+                  <span className="text-3xl md:text-4xl font-black text-blue-400 tracking-[0.15em]">
+                    {(
+                      walletAddress
+                        .split("")
+                        .reduce(
+                          (acc, char) =>
+                            acc + char.charCodeAt(0),
+                          0
+                        ) % 999
+                    ) + 1}
+                  </span>
 
-      </div>
-    </div>
-  )}
+                </div>
+              </div>
+            )}
 
-</div>
+          </div>
+
           {/* COOL TIMER */}
           {cooldown > 0 && (
             <div className="flex flex-col items-center justify-center mb-10 animate-pulse">
@@ -596,13 +635,13 @@ export default function Home() {
                 cooldown > 0
               }
               className={`relative z-[70] px-14 py-6 font-black rounded-full transition-all text-[10px] uppercase tracking-[0.3em] shadow-xl
-              
+
               ${
                 cooldown > 0
                   ? "bg-blue-950/40 text-blue-300 border border-blue-500/20 cursor-not-allowed"
                   : "bg-white text-black hover:bg-blue-600 hover:text-white hover:scale-105 active:scale-95"
               }
-              
+
               ${
                 isAnimating
                   ? "opacity-50"
@@ -638,49 +677,49 @@ export default function Home() {
             <div className="flex flex-col text-[14px] md:text-[16px] text-white/90 font-mono tracking-[0.2em] gap-3 border-l-2 border-blue-600/50 pl-6 py-1">
 
               {[
-  {
-    text: "TRADE ON BASE",
-    href: null,
-  },
-  {
-    text: "BUILD ON BASE",
-    href: null,
-  },
-  {
-    text: "PAY ON BASE",
-    href: null,
-  },
-  {
-    text: "BE ON BASE.APP",
-    href:
-      "https://base.app/invite/ozzbourne/YRQ8S104",
-  },
-].map((item, i) =>
-  item.href ? (
-    <a
-      key={i}
-      href={item.href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="hover:text-blue-400 hover:translate-x-2 transition-all duration-300"
-    >
-      <span className="text-blue-600 text-[10px]">
-        0{i + 1}
-      </span>{" "}
-      {item.text}
-    </a>
-  ) : (
-    <span
-      key={i}
-      className="hover:text-blue-400 hover:translate-x-2 transition-all duration-300"
-    >
-      <span className="text-blue-600 text-[10px]">
-        0{i + 1}
-      </span>{" "}
-      {item.text}
-    </span>
-  )
-)}
+                {
+                  text: "TRADE ON BASE",
+                  href: null,
+                },
+                {
+                  text: "BUILD ON BASE",
+                  href: null,
+                },
+                {
+                  text: "PAY ON BASE",
+                  href: null,
+                },
+                {
+                  text: "BE ON BASE.APP",
+                  href:
+                    "https://base.app/invite/ozzbourne/YRQ8S104",
+                },
+              ].map((item, i) =>
+                item.href ? (
+                  <a
+                    key={i}
+                    href={item.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-blue-400 hover:translate-x-2 transition-all duration-300"
+                  >
+                    <span className="text-blue-600 text-[10px]">
+                      0{i + 1}
+                    </span>{" "}
+                    {item.text}
+                  </a>
+                ) : (
+                  <span
+                    key={i}
+                    className="hover:text-blue-400 hover:translate-x-2 transition-all duration-300"
+                  >
+                    <span className="text-blue-600 text-[10px]">
+                      0{i + 1}
+                    </span>{" "}
+                    {item.text}
+                  </span>
+                )
+              )}
 
             </div>
           </div>
