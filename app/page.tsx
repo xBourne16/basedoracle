@@ -5,6 +5,7 @@ import Image from "next/image";
 import { ethers } from "ethers";
 import { quotes } from "./quotes";
 import "./globals.css";
+import { BaseLogo } from "./BaseLogo";
 
 export default function Home() {
   const [quote, setQuote] = useState("");
