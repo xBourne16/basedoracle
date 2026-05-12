@@ -14,7 +14,8 @@ export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeProvider, setActiveProvider] = useState<any>(null);
 
-  const CONTRACT_ADDRESS = "0xd556B65ed18a45C3FB7C50AB51F8A14E62Ba245b";
+  // YENİ VE GÜNCEL KONTRAT ADRESİN
+  const CONTRACT_ADDRESS = "0x2C53bB6fD360dE621C9319c7Cb441f3AEBE8325b";
 
   useEffect(() => {
     const hour = new Date().getHours();
@@ -41,7 +42,6 @@ export default function Home() {
 
     let provider: any = null;
 
-    // Cüzdan Çakışma Çözücü (Multi-wallet support)
     if (eth.providers?.length) {
       if (walletType === 'rabby') {
         provider = eth.providers.find((p: any) => p.isRabby);
@@ -79,13 +79,12 @@ export default function Home() {
       
       const provider = activeProvider || (window as any).ethereum;
 
-      // DOĞRU DATA: consult() fonksiyonu için 0x45850a1c
       const txParameters = {
         to: CONTRACT_ADDRESS,
         from: walletAddress,
-        data: '0x45850a1c', 
+        data: '0x45850a1c', // consult() fonksiyonun için doğru ID
         value: '0x0',
-        gas: '0x3D090', // 250,000 gas limit (Likely to fail hatasını engeller)
+        gas: '0x493E0',     // 300,000 Gas (Hata almanı engeller)
       };
 
       const hash = await provider.request({
@@ -95,7 +94,6 @@ export default function Home() {
       
       setTxHash(hash);
 
-      // İşlem Onayı Bekleme
       let receipt = null;
       while (receipt === null) {
         receipt = await provider.request({
@@ -111,7 +109,7 @@ export default function Home() {
     } catch (error: any) {
       console.error("TX Error:", error);
       if (error.code !== 4001) {
-        alert("Transaction failed. Make sure you have ETH on Base network.");
+        alert("Transaction failed. Check your Base ETH balance.");
       }
     } finally {
       setIsAnimating(false);
@@ -122,9 +120,8 @@ export default function Home() {
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-center p-4 bg-[#020204] overflow-hidden selection:bg-blue-600/40">
       
-      {/* WALLET MODAL */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl">
+        <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl animate-in fade-in duration-300">
           <div className="w-full max-w-sm bg-[#0a0a0c] border border-white/10 rounded-[32px] p-8 shadow-2xl relative">
             <button onClick={() => setIsModalOpen(false)} className="absolute top-6 right-6 text-white/40 hover:text-white transition-colors">✕</button>
             <h2 className="text-[12px] font-black text-white uppercase tracking-[0.4em] mb-10 text-center italic">Connect Soul</h2>
@@ -142,7 +139,6 @@ export default function Home() {
         </div>
       )}
 
-      {/* TOP NAV */}
       <nav className="fixed top-0 w-full p-8 flex justify-between items-start z-[100]">
         <div className="flex flex-col group">
           <div className="text-[11px] text-blue-500 tracking-[0.5em] font-black uppercase italic transition-all group-hover:tracking-[0.6em]">
@@ -159,7 +155,7 @@ export default function Home() {
 
         <button 
           onClick={() => setIsModalOpen(true)} 
-          className="group relative flex items-center gap-3 px-7 py-3 bg-white/[0.04] backdrop-blur-2xl border border-white/10 rounded-full transition-all duration-500 hover:border-blue-500/60 hover:bg-white/[0.1] active:scale-95 z-[110]"
+          className="group relative flex items-center gap-3 px-7 py-3 bg-white/[0.04] backdrop-blur-2xl border border-white/10 rounded-full transition-all duration-500 hover:border-blue-500/60 hover:bg-white/[0.1] active:scale-95 shadow-[0_0_20px_rgba(59,130,246,0.05)] z-[110]"
         >
           <div className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.8)] animate-pulse"></div>
           <span className="text-[11px] font-black text-white uppercase tracking-[0.25em]">
@@ -168,7 +164,6 @@ export default function Home() {
         </button>
       </nav>
 
-      {/* BACKGROUNDS */}
       <div className="absolute inset-0 z-0 opacity-[0.06] pointer-events-none select-none">
         <Image src="/always_has_been.png" alt="BG" fill className="object-cover contrast-125" priority />
       </div>
@@ -177,7 +172,6 @@ export default function Home() {
         <Image src="/crypto_scribble.png" alt="Oracle" fill className="object-contain grayscale brightness-125 contrast-110" />
       </div>
 
-      {/* HERO SECTION */}
       <div className={`relative z-[50] w-full max-w-6xl flex flex-col items-center transition-all lg:pr-32 ${isAnimating ? 'scale-95 blur-sm' : ''}`}>
         <h1 className="text-8xl md:text-[140px] font-black text-white leading-none tracking-tighter uppercase italic mb-16 drop-shadow-2xl select-none">
           BASED<span className="text-blue-600">.</span>ORACLE
@@ -204,7 +198,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* FOOTER */}
       <footer className="fixed bottom-10 w-full px-12 flex justify-between items-end z-[40] pointer-events-none">
         <div className="flex flex-col gap-4 group pointer-events-auto">
           <div className="flex flex-col gap-1">
