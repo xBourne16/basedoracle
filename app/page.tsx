@@ -41,6 +41,7 @@ export default function Home() {
 
     let provider: any = null;
 
+    // Cüzdan Çakışma Çözücü (Multi-wallet support)
     if (eth.providers?.length) {
       if (walletType === 'rabby') {
         provider = eth.providers.find((p: any) => p.isRabby);
@@ -62,8 +63,6 @@ export default function Home() {
       } catch (err) {
         console.error("Connection rejected");
       }
-    } else {
-      alert(`${walletType.toUpperCase()} not found.`);
     }
   };
 
@@ -80,12 +79,13 @@ export default function Home() {
       
       const provider = activeProvider || (window as any).ethereum;
 
+      // DOĞRU DATA: consult() fonksiyonu için 0x45850a1c
       const txParameters = {
         to: CONTRACT_ADDRESS,
         from: walletAddress,
-        data: '0x62734346',
+        data: '0x45850a1c', 
         value: '0x0',
-        gas: '0x3D090', // 250,000 gas forced
+        gas: '0x3D090', // 250,000 gas limit (Likely to fail hatasını engeller)
       };
 
       const hash = await provider.request({
@@ -95,6 +95,7 @@ export default function Home() {
       
       setTxHash(hash);
 
+      // İşlem Onayı Bekleme
       let receipt = null;
       while (receipt === null) {
         receipt = await provider.request({
@@ -110,7 +111,7 @@ export default function Home() {
     } catch (error: any) {
       console.error("TX Error:", error);
       if (error.code !== 4001) {
-        alert("Transaction failed. Check your Base ETH balance or reset your wallet nonce.");
+        alert("Transaction failed. Make sure you have ETH on Base network.");
       }
     } finally {
       setIsAnimating(false);
@@ -121,6 +122,7 @@ export default function Home() {
   return (
     <main className="relative flex min-h-screen flex-col items-center justify-center p-4 bg-[#020204] overflow-hidden selection:bg-blue-600/40">
       
+      {/* WALLET MODAL */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl">
           <div className="w-full max-w-sm bg-[#0a0a0c] border border-white/10 rounded-[32px] p-8 shadow-2xl relative">
@@ -140,6 +142,7 @@ export default function Home() {
         </div>
       )}
 
+      {/* TOP NAV */}
       <nav className="fixed top-0 w-full p-8 flex justify-between items-start z-[100]">
         <div className="flex flex-col group">
           <div className="text-[11px] text-blue-500 tracking-[0.5em] font-black uppercase italic transition-all group-hover:tracking-[0.6em]">
@@ -165,6 +168,7 @@ export default function Home() {
         </button>
       </nav>
 
+      {/* BACKGROUNDS */}
       <div className="absolute inset-0 z-0 opacity-[0.06] pointer-events-none select-none">
         <Image src="/always_has_been.png" alt="BG" fill className="object-cover contrast-125" priority />
       </div>
@@ -173,6 +177,7 @@ export default function Home() {
         <Image src="/crypto_scribble.png" alt="Oracle" fill className="object-contain grayscale brightness-125 contrast-110" />
       </div>
 
+      {/* HERO SECTION */}
       <div className={`relative z-[50] w-full max-w-6xl flex flex-col items-center transition-all lg:pr-32 ${isAnimating ? 'scale-95 blur-sm' : ''}`}>
         <h1 className="text-8xl md:text-[140px] font-black text-white leading-none tracking-tighter uppercase italic mb-16 drop-shadow-2xl select-none">
           BASED<span className="text-blue-600">.</span>ORACLE
@@ -180,16 +185,18 @@ export default function Home() {
         
         <div className="relative w-full max-w-2xl bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-[50px] p-16 shadow-2xl md:-translate-x-12">
           <div className="absolute top-10 left-12 w-10 h-[2px] bg-blue-600 shadow-[0_0_15px_rgba(37,99,235,1)]"></div>
+          
           <div className="min-h-[180px] flex items-center justify-center">
             <p className="text-3xl md:text-5xl text-white italic text-center leading-[1.1] font-medium">
               {quote ? `"${quote}"` : isAnimating ? "Witnessing the blockchain..." : "Authorize the transaction to decrypt your fate."}
             </p>
           </div>
+          
           <div className="mt-16 flex justify-end relative z-[60]">
             <button 
               onClick={handleAction} 
               disabled={isAnimating} 
-              className="relative z-[70] px-14 py-6 bg-white text-black font-black rounded-full hover:bg-blue-600 hover:text-white hover:scale-105 active:scale-95 transition-all text-[10px] uppercase tracking-[0.3em] shadow-xl"
+              className="relative z-[70] px-14 py-6 bg-white text-black font-black rounded-full hover:bg-blue-600 hover:text-white hover:scale-105 active:scale-95 transition-all text-[10px] uppercase tracking-[0.3em] cursor-pointer shadow-xl disabled:opacity-50"
             >
               {isAnimating ? "Consulting..." : txHash ? "Fate Decrypted" : "Consult Fate"}
             </button>
@@ -197,6 +204,7 @@ export default function Home() {
         </div>
       </div>
 
+      {/* FOOTER */}
       <footer className="fixed bottom-10 w-full px-12 flex justify-between items-end z-[40] pointer-events-none">
         <div className="flex flex-col gap-4 group pointer-events-auto">
           <div className="flex flex-col gap-1">
@@ -218,8 +226,8 @@ export default function Home() {
               <Image src="/base_logo.png" alt="Base Logo" fill className="object-contain brightness-200" />
             </div>
           </div>
-          <a href="https://x.com/np0int" target="_blank" rel="noopener noreferrer" className="group flex items-center gap-3 bg-white/[0.02] hover:bg-white/[0.08] border border-white/5 px-6 py-2.5 rounded-full backdrop-blur-xl translate-x-[-10px]">
-            <span className="text-[10px] text-white/40 font-mono tracking-[0.3em] group-hover:text-blue-400 uppercase">@np0int</span>
+          <a href="https://x.com/np0int" target="_blank" rel="noopener noreferrer" className="group flex items-center gap-3 bg-white/[0.02] hover:bg-white/[0.08] border border-white/5 px-6 py-2.5 rounded-full transition-all duration-500 backdrop-blur-xl translate-x-[-10px]">
+            <span className="text-[10px] text-white/40 font-mono tracking-[0.3em] group-hover:text-blue-400 uppercase transition-colors">@np0int</span>
             <svg width="12" height="12" viewBox="0 0 24 24" fill="white" className="opacity-40 group-hover:opacity-100 group-hover:fill-blue-400">
               <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path>
             </svg>
