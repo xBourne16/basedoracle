@@ -17,7 +17,8 @@ export default function Home() {
   const [activeProvider, setActiveProvider] = useState<any>(null);
 
   // CONTRACT ADDRESS
-  const CONTRACT_ADDRESS = "0x2C53bB6fD360dE621C9319c7Cb441f3AEBE8325b";
+  const CONTRACT_ADDRESS =
+    "0x2C53bB6fD360dE621C9319c7Cb441f3AEBE8325b";
 
   // ABI
   const abi = [
@@ -27,24 +28,36 @@ export default function Home() {
   useEffect(() => {
     const hour = new Date().getHours();
 
-    if (hour >= 5 && hour < 12) setGreeting("The Great Awakening");
-    else if (hour >= 12 && hour < 18) setGreeting("The High Noon Cycle");
-    else if (hour >= 18 && hour < 22) setGreeting("The Twilight Shift");
+    if (hour >= 5 && hour < 12)
+      setGreeting("The Great Awakening");
+    else if (hour >= 12 && hour < 18)
+      setGreeting("The High Noon Cycle");
+    else if (hour >= 18 && hour < 22)
+      setGreeting("The Twilight Shift");
     else setGreeting("The Midnight Watch");
   }, []);
 
-  const getUniqueQuoteIndex = (address: string, hash: string) => {
+  const getUniqueQuoteIndex = (
+    address: string,
+    hash: string
+  ) => {
     const combinedSeed = address + hash;
 
     const charSum = combinedSeed
       .split("")
-      .reduce((acc, char) => acc + char.charCodeAt(0), 0);
+      .reduce(
+        (acc, char) => acc + char.charCodeAt(0),
+        0
+      );
 
     return charSum % quotes.length;
   };
 
   const connectWallet = async (
-    walletType: "metamask" | "rabby"
+    walletType:
+      | "metamask"
+      | "rabby"
+      | "coinbase"
   ) => {
     if (typeof window === "undefined") return;
 
@@ -57,31 +70,70 @@ export default function Home() {
 
     let provider: any = null;
 
-    // Wallet conflict prevention
+    // MULTI WALLET DETECTION
     if (eth.providers?.length) {
+
       if (walletType === "rabby") {
-        provider = eth.providers.find((p: any) => p.isRabby);
-      } else {
         provider = eth.providers.find(
-          (p: any) => p.isMetaMask && !p.isRabby
+          (p: any) => p.isRabby
         );
       }
+
+      else if (walletType === "coinbase") {
+        provider = eth.providers.find(
+          (p: any) => p.isCoinbaseWallet
+        );
+      }
+
+      else {
+        provider = eth.providers.find(
+          (p: any) =>
+            p.isMetaMask &&
+            !p.isRabby &&
+            !p.isCoinbaseWallet
+        );
+      }
+
     } else {
-      if (walletType === "rabby" && eth.isRabby) provider = eth;
-      else if (walletType === "metamask" && !eth.isRabby)
+
+      if (
+        walletType === "rabby" &&
+        eth.isRabby
+      ) {
         provider = eth;
-      else provider = eth;
+      }
+
+      else if (
+        walletType === "coinbase" &&
+        eth.isCoinbaseWallet
+      ) {
+        provider = eth;
+      }
+
+      else if (
+        walletType === "metamask" &&
+        eth.isMetaMask &&
+        !eth.isCoinbaseWallet
+      ) {
+        provider = eth;
+      }
+
+      else {
+        provider = eth;
+      }
     }
 
     if (provider) {
       try {
-        const accounts = await provider.request({
-          method: "eth_requestAccounts",
-        });
+        const accounts =
+          await provider.request({
+            method: "eth_requestAccounts",
+          });
 
         setWalletAddress(accounts[0]);
         setActiveProvider(provider);
         setIsModalOpen(false);
+
       } catch (err) {
         console.error("Connection rejected");
       }
@@ -101,24 +153,30 @@ export default function Home() {
       setGlowIntensity("opacity-60 scale-110");
 
       const injectedProvider =
-        activeProvider || (window as any).ethereum;
+        activeProvider ||
+        (window as any).ethereum;
 
       // BASE MAINNET CHECK
-      const chainId = await injectedProvider.request({
-        method: "eth_chainId",
-      });
+      const chainId =
+        await injectedProvider.request({
+          method: "eth_chainId",
+        });
 
       if (chainId !== "0x2105") {
-        alert("Please switch to Base Mainnet.");
+        alert(
+          "Please switch to Base Mainnet."
+        );
         return;
       }
 
       // ETHERS PROVIDER
-      const provider = new ethers.BrowserProvider(
-        injectedProvider
-      );
+      const provider =
+        new ethers.BrowserProvider(
+          injectedProvider
+        );
 
-      const signer = await provider.getSigner();
+      const signer =
+        await provider.getSigner();
 
       // CONTRACT
       const contract = new ethers.Contract(
@@ -128,16 +186,22 @@ export default function Home() {
       );
 
       // SEND TX
-      const tx = await contract.consult();
+      const tx =
+        await contract.consult();
 
       setTxHash(tx.hash);
 
-      // Show quote immediately
+      // SHOW QUOTE
       setQuote(
-        quotes[getUniqueQuoteIndex(walletAddress, tx.hash)]
+        quotes[
+          getUniqueQuoteIndex(
+            walletAddress,
+            tx.hash
+          )
+        ]
       );
 
-      // Wait confirmation in background
+      // WAIT CONFIRMATION
       await tx.wait();
 
     } catch (error: any) {
@@ -150,7 +214,9 @@ export default function Home() {
       }
     } finally {
       setIsAnimating(false);
-      setGlowIntensity("opacity-20 scale-100");
+      setGlowIntensity(
+        "opacity-20 scale-100"
+      );
     }
   };
 
@@ -161,8 +227,11 @@ export default function Home() {
       {isModalOpen && (
         <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl">
           <div className="w-full max-w-sm bg-[#0a0a0c] border border-white/10 rounded-[32px] p-8 shadow-2xl relative">
+
             <button
-              onClick={() => setIsModalOpen(false)}
+              onClick={() =>
+                setIsModalOpen(false)
+              }
               className="absolute top-6 right-6 text-white/40 hover:text-white transition-colors"
             >
               ✕
@@ -173,19 +242,28 @@ export default function Home() {
             </h2>
 
             <div className="flex flex-col gap-3">
+
+              {/* METAMASK */}
               <button
-                onClick={() => connectWallet("metamask")}
+                onClick={() =>
+                  connectWallet("metamask")
+                }
                 className="flex items-center justify-between px-6 py-5 bg-white/[0.03] border border-white/5 rounded-2xl hover:bg-white/10 transition-all group active:scale-95"
               >
                 <span className="text-[11px] font-bold text-white/70 group-hover:text-white uppercase tracking-widest">
                   MetaMask
                 </span>
 
-                <span className="text-xl">🦊</span>
+                <span className="text-xl">
+                  🦊
+                </span>
               </button>
 
+              {/* RABBY */}
               <button
-                onClick={() => connectWallet("rabby")}
+                onClick={() =>
+                  connectWallet("rabby")
+                }
                 className="flex items-center justify-between px-6 py-5 bg-white/[0.03] border border-white/5 rounded-2xl hover:bg-white/10 transition-all group active:scale-95"
               >
                 <span className="text-[11px] font-bold text-white/70 group-hover:text-white uppercase tracking-widest">
@@ -201,6 +279,28 @@ export default function Home() {
                   />
                 </div>
               </button>
+
+              {/* COINBASE */}
+              <button
+                onClick={() =>
+                  connectWallet("coinbase")
+                }
+                className="flex items-center justify-between px-6 py-5 bg-white/[0.03] border border-white/5 rounded-2xl hover:bg-white/10 transition-all group active:scale-95"
+              >
+                <span className="text-[11px] font-bold text-white/70 group-hover:text-white uppercase tracking-widest">
+                  Coinbase Wallet
+                </span>
+
+                <div className="relative w-6 h-6">
+                  <Image
+                    src="/coinbase_logo.svg"
+                    alt="Coinbase"
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+              </button>
+
             </div>
           </div>
         </div>
@@ -229,7 +329,9 @@ export default function Home() {
         </div>
 
         <button
-          onClick={() => setIsModalOpen(true)}
+          onClick={() =>
+            setIsModalOpen(true)
+          }
           className="group relative flex items-center gap-3 px-7 py-3 bg-white/[0.04] backdrop-blur-2xl border border-white/10 rounded-full transition-all duration-500 hover:border-blue-500/60 hover:bg-white/[0.1] active:scale-95 z-[110]"
         >
           <div className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.8)] animate-pulse"></div>
@@ -245,6 +347,7 @@ export default function Home() {
         </button>
       </nav>
 
+      {/* BG */}
       <div className="absolute inset-0 z-0 opacity-[0.06] pointer-events-none select-none">
         <Image
           src="/always_has_been.png"
@@ -255,6 +358,7 @@ export default function Home() {
         />
       </div>
 
+      {/* GLOW */}
       <div
         className={`absolute right-[8%] top-[15%] w-[600px] h-[550px] z-[5] transition-all duration-1000 ${glowIntensity} pointer-events-none select-none`}
       >
@@ -266,16 +370,24 @@ export default function Home() {
         />
       </div>
 
+      {/* MAIN */}
       <div
         className={`relative z-[50] w-full max-w-6xl flex flex-col items-center transition-all lg:pr-32 ${
-          isAnimating ? "scale-95 blur-sm" : ""
+          isAnimating
+            ? "scale-95 blur-sm"
+            : ""
         }`}
       >
         <h1 className="text-8xl md:text-[140px] font-black text-white leading-none tracking-tighter uppercase italic mb-16 drop-shadow-2xl select-none">
-          BASED<span className="text-blue-600">.</span>ORACLE
+          BASED
+          <span className="text-blue-600">
+            .
+          </span>
+          ORACLE
         </h1>
 
         <div className="relative w-full max-w-2xl bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-[50px] p-16 shadow-2xl md:-translate-x-12">
+
           <div className="absolute top-10 left-12 w-10 h-[2px] bg-blue-600 shadow-[0_0_15px_rgba(37,99,235,1)]"></div>
 
           <div className="min-h-[180px] flex items-center justify-center">
@@ -301,17 +413,22 @@ export default function Home() {
                 : "Consult Fate"}
             </button>
           </div>
+
         </div>
       </div>
 
+      {/* FOOTER */}
       <footer className="fixed bottom-10 w-full px-12 flex justify-between items-end z-[40] pointer-events-none">
+
         <div className="flex flex-col gap-4 group pointer-events-auto">
           <div className="flex flex-col gap-1">
+
             <span className="text-[13px] text-blue-500 font-black uppercase tracking-[0.4em]">
               Weekend Protocol:
             </span>
 
             <div className="flex flex-col text-[14px] md:text-[16px] text-white/90 font-mono tracking-[0.2em] gap-3 border-l-2 border-blue-600/50 pl-6 py-1">
+
               {[
                 "TRADE ON BASE",
                 "BUILD ON BASE",
@@ -328,12 +445,15 @@ export default function Home() {
                   {text}
                 </span>
               ))}
+
             </div>
           </div>
         </div>
 
         <div className="flex flex-col items-end gap-3 pointer-events-auto">
+
           <div className="flex items-center gap-4 bg-white/[0.05] px-7 py-3.5 rounded-full border border-white/10 backdrop-blur-xl shadow-xl">
+
             <span className="text-[11px] text-blue-500 font-black tracking-widest uppercase italic leading-none">
               You&apos;re now based
             </span>
@@ -358,6 +478,7 @@ export default function Home() {
               @np0int
             </span>
           </a>
+
         </div>
       </footer>
     </main>
