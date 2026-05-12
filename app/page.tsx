@@ -21,7 +21,7 @@ export default function Home() {
 
   // CONTRACT ADDRESS
   const CONTRACT_ADDRESS =
-    "0x19eb7475ee24BB7988E37f376203B3a27d5fbDcc";
+    "0x2C53bB6fD360dE621C9319c7Cb441f3AEBE8325b";
 
   // ABI
   const abi = [
@@ -194,6 +194,14 @@ export default function Home() {
         console.error("Connection rejected");
       }
     }
+  };
+
+  const disconnectWallet = () => {
+    setWalletAddress(null);
+    setActiveProvider(null);
+    setTxHash(null);
+    setQuote("");
+    setCooldown(0);
   };
 
   const handleAction = async () => {
@@ -482,9 +490,13 @@ export default function Home() {
         </div>
 
         <button
-          onClick={() =>
-            setIsModalOpen(true)
-          }
+          onClick={() => {
+            if (walletAddress) {
+              disconnectWallet();
+            } else {
+              setIsModalOpen(true);
+            }
+          }}
           className="group relative flex items-center gap-3 px-7 py-3 bg-white/[0.04] backdrop-blur-2xl border border-white/10 rounded-full transition-all duration-500 hover:border-blue-500/60 hover:bg-white/[0.1] active:scale-95 z-[110]"
         >
 
