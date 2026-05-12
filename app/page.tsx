@@ -16,8 +16,13 @@ export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeProvider, setActiveProvider] = useState<any>(null);
 
+  // DROPDOWN
+  const [isDropdownOpen, setIsDropdownOpen] =
+    useState(false);
+
   // COOLDOWN TIMER
-  const [cooldown, setCooldown] = useState<number>(0);
+  const [cooldown, setCooldown] =
+    useState<number>(0);
 
   // CONTRACT ADDRESS
   const CONTRACT_ADDRESS =
@@ -202,6 +207,7 @@ export default function Home() {
     setTxHash(null);
     setQuote("");
     setCooldown(0);
+    setIsDropdownOpen(false);
   };
 
   const handleAction = async () => {
@@ -489,30 +495,61 @@ export default function Home() {
           </div>
         </div>
 
-        <button
-          onClick={() => {
-            if (walletAddress) {
-              disconnectWallet();
-            } else {
-              setIsModalOpen(true);
-            }
-          }}
-          className="group relative flex items-center gap-3 px-7 py-3 bg-white/[0.04] backdrop-blur-2xl border border-white/10 rounded-full transition-all duration-500 hover:border-blue-500/60 hover:bg-white/[0.1] active:scale-95 z-[110]"
-        >
+        <div className="relative z-[120]">
 
-          <div className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.8)] animate-pulse"></div>
+          <button
+            onClick={() => {
+              if (walletAddress) {
+                setIsDropdownOpen(
+                  !isDropdownOpen
+                );
+              } else {
+                setIsModalOpen(true);
+              }
+            }}
+            className="group relative flex items-center gap-3 px-7 py-3 bg-white/[0.04] backdrop-blur-2xl border border-white/10 rounded-full transition-all duration-500 hover:border-blue-500/60 hover:bg-white/[0.1] active:scale-95 z-[110]"
+          >
 
-          <span className="text-[11px] font-black text-white uppercase tracking-[0.25em]">
+            <div className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.8)] animate-pulse"></div>
 
-            {walletAddress
-              ? `${walletAddress.substring(
-                  0,
-                  6
-                )}...${walletAddress.slice(-4)}`
-              : "Connect Wallet"}
+            <span className="text-[11px] font-black text-white uppercase tracking-[0.25em]">
 
-          </span>
-        </button>
+              {walletAddress
+                ? `${walletAddress.substring(
+                    0,
+                    6
+                  )}...${walletAddress.slice(-4)}`
+                : "Connect Wallet"}
+
+            </span>
+          </button>
+
+          {walletAddress &&
+            isDropdownOpen && (
+              <div className="absolute right-0 mt-3 w-[220px] bg-[#0a0a0c]/95 backdrop-blur-2xl border border-white/10 rounded-2xl p-3 shadow-2xl">
+
+                <div className="px-3 py-2 border-b border-white/5 mb-3">
+
+                  <p className="text-[9px] text-white/30 uppercase tracking-[0.3em] mb-1">
+                    Connected Wallet
+                  </p>
+
+                  <p className="text-[11px] text-white font-mono break-all">
+                    {walletAddress}
+                  </p>
+
+                </div>
+
+                <button
+                  onClick={disconnectWallet}
+                  className="w-full px-4 py-3 rounded-xl bg-white/[0.04] hover:bg-red-500/10 border border-white/5 hover:border-red-500/30 transition-all duration-300 text-[10px] font-black uppercase tracking-[0.25em] text-white hover:text-red-400"
+                >
+                  Disconnect
+                </button>
+
+              </div>
+            )}
+        </div>
       </nav>
 
       {/* BG */}
