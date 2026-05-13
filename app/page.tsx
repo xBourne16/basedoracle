@@ -9,6 +9,7 @@ import "./globals.css";
 export default function Home() {
   const [quote, setQuote] = useState("");
   const [isAnimating, setIsAnimating] = useState(false);
+
   const [glowIntensity, setGlowIntensity] = useState(
     "opacity-20 scale-100"
   );
@@ -36,6 +37,10 @@ export default function Home() {
   const [cooldown, setCooldown] =
     useState<number>(0);
 
+  // DAILY LUCKY NUMBER
+  const [luckyNumber, setLuckyNumber] =
+    useState<number | null>(null);
+
   // CONTRACT ADDRESS
   const CONTRACT_ADDRESS =
     "0x2C53bB6fD360dE621C9319c7Cb441f3AEBE8325b";
@@ -59,6 +64,32 @@ export default function Home() {
       setGreeting("The Midnight Watch");
     }
   }, []);
+
+  // DAILY DATA LOAD
+  useEffect(() => {
+    if (!walletAddress) return;
+
+    const today =
+      new Date().toISOString().split("T")[0];
+
+    const savedQuote =
+      localStorage.getItem(
+        `oracle_quote_${walletAddress}_${today}`
+      );
+
+    const savedLucky =
+      localStorage.getItem(
+        `oracle_lucky_${walletAddress}_${today}`
+      );
+
+    if (savedQuote) {
+      setQuote(savedQuote);
+    }
+
+    if (savedLucky) {
+      setLuckyNumber(Number(savedLucky));
+    }
+  }, [walletAddress]);
 
   // LIVE BLOCKCHAIN COOLDOWN TIMER
   useEffect(() => {
@@ -114,7 +145,11 @@ export default function Home() {
     address: string,
     hash: string
   ) => {
-    const combinedSeed = address + hash;
+    const today =
+      new Date().toISOString().split("T")[0];
+
+    const combinedSeed =
+      address + hash + today;
 
     const charSum = combinedSeed
       .split("")
@@ -125,6 +160,27 @@ export default function Home() {
       );
 
     return charSum % quotes.length;
+  };
+
+  // DAILY LUCKY NUMBER
+  const generateLuckyNumber = (
+    address: string
+  ) => {
+    const today =
+      new Date().toISOString().split("T")[0];
+
+    const combinedSeed =
+      address + today;
+
+    const charSum = combinedSeed
+      .split("")
+      .reduce(
+        (acc, char) =>
+          acc + char.charCodeAt(0),
+        0
+      );
+
+    return (charSum % 999) + 1;
   };
 
   const connectWallet = async (
@@ -212,6 +268,7 @@ export default function Home() {
     setTxHash(null);
     setQuote("");
     setCooldown(0);
+    setLuckyNumber(null);
     setIsDropdownOpen(false);
   };
 
@@ -263,7 +320,7 @@ export default function Home() {
             ],
           });
         } catch (switchError: any) {
-          // BASE NETWORK EKLE
+          // ADD BASE NETWORK
           if (
             switchError.code === 4902
           ) {
@@ -292,9 +349,6 @@ export default function Home() {
               }
             );
           } else {
-            alert(
-              "Please switch to Base Mainnet."
-            );
             return;
           }
         }
@@ -320,13 +374,39 @@ export default function Home() {
 
       setTxHash(tx.hash);
 
-      setQuote(
+      // DAILY QUOTE
+      const dailyQuote =
         quotes[
           getUniqueQuoteIndex(
             walletAddress,
             tx.hash
           )
-        ]
+        ];
+
+      setQuote(dailyQuote);
+
+      // DAILY LUCKY NUMBER
+      const number =
+        generateLuckyNumber(
+          walletAddress
+        );
+
+      setLuckyNumber(number);
+
+      // SAVE DAILY DATA
+      const today =
+        new Date()
+          .toISOString()
+          .split("T")[0];
+
+      localStorage.setItem(
+        `oracle_quote_${walletAddress}_${today}`,
+        dailyQuote
+      );
+
+      localStorage.setItem(
+        `oracle_lucky_${walletAddress}_${today}`,
+        number.toString()
       );
 
       await tx.wait();
@@ -343,11 +423,15 @@ export default function Home() {
     } catch (error: any) {
       console.error("TX Error:", error);
 
-      if (error.code !== 4001) {
-        alert(
-          "Transaction failed or cooldown active."
-        );
+      // USER REJECT
+      if (error.code === 4001) {
+        return;
       }
+
+      // SILENT FAIL
+      console.log(
+        "Cooldown active or tx failed."
+      );
     } finally {
       setIsAnimating(false);
 
@@ -621,7 +705,7 @@ export default function Home() {
 
             {/* LUCKY NUMBER */}
             {quote &&
-              walletAddress && (
+              luckyNumber && (
                 <div className="mt-10 flex flex-col items-center">
                   <span className="text-[10px] uppercase tracking-[0.4em] text-white/30 mb-3 italic">
                     Your Lucky Number Today
@@ -629,21 +713,7 @@ export default function Home() {
 
                   <div className="px-8 py-3 rounded-full border border-blue-500/30 bg-blue-500/10 backdrop-blur-xl shadow-[0_0_30px_rgba(37,99,235,0.2)]">
                     <span className="text-3xl md:text-4xl font-black text-blue-400 tracking-[0.15em]">
-                      {(
-                        walletAddress
-                          .split("")
-                          .reduce(
-                            (
-                              acc,
-                              char
-                            ) =>
-                              acc +
-                              char.charCodeAt(
-                                0
-                              ),
-                            0
-                          ) % 999
-                      ) + 1}
+                      {luckyNumber}
                     </span>
                   </div>
                 </div>
