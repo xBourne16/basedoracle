@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { ethers } from "ethers";
 import { quotes } from "./quotes";
-import { songCategories } from "./songcategories";
+import { songCategories } from "./songCategories";
 import "./globals.css";
 
 export default function Home() {
@@ -830,7 +830,7 @@ export default function Home() {
                     <div className="flex flex-col items-start min-w-[140px]">
                         <span className="text-[8px] text-blue-500/50 uppercase tracking-tighter mb-1 font-bold">Now Streaming:</span>
                         <span className="text-[10px] text-white font-mono uppercase tracking-[0.1em] italic truncate max-w-[180px]">
-                            {currentPlaylist[currentSongIndex]?.title || "Select Era"}
+                            {currentPlaylist[currentSongIndex]?.name || "Select Era"}
                         </span>
                     </div>
                   </div>
@@ -928,17 +928,23 @@ export default function Home() {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="hover:text-blue-400 hover:translate-x-2 transition-all duration-300"
-                  ) : (
-                    <span
-                      key={i}
-                      className="hover:text-blue-400 hover:translate-x-2 transition-all duration-300"
-                    >
-                      <span className="text-blue-600 text-[10px]">
-                        0{i + 1}
-                      </span>{" "}
-                      {item.text}
-                    </span>
-                  )
+                  >
+                    <span className="text-blue-600 text-[10px]">
+                      0{i + 1}
+                    </span>{" "}
+                    {item.text}
+                  </a>
+                ) : (
+                  <span
+                    key={i}
+                    className="hover:text-blue-400 hover:translate-x-2 transition-all duration-300"
+                  >
+                    <span className="text-blue-600 text-[10px]">
+                      0{i + 1}
+                    </span>{" "}
+                    {item.text}
+                  </span>
+                )
               )}
             </div>
           </div>
