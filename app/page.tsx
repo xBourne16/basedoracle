@@ -43,7 +43,7 @@ export default function Home() {
 
   // CONTRACT ADDRESS
   const CONTRACT_ADDRESS =
-    "0x19eb7475ee24bb7988e37f376203b3a27d5fbdcc";
+    "0x27a1A2876754622cFf1999e0EeBa7F23a5933f2e";
 
   // ABI
   const abi = [
