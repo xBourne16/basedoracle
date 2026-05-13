@@ -68,10 +68,25 @@ export default function Home() {
     }
 
     // Ses Hazırlığı
-    audioRef.current = new Audio("/mystic-temple.mp3");
-    audioRef.current.loop = true;
-    audioRef.current.volume = 0.15;
+    const audio = new Audio("/mystic-temple.mp3");
+    audio.loop = true;
+    audio.volume = 0.15;
+    audioRef.current = audio;
+
+    return () => {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+    };
   }, []);
+
+  // Ses Durumu Değiştiğinde Elementi Güncelle
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.muted = isMuted;
+    }
+  }, [isMuted]);
 
   // DAILY DATA LOAD
   useEffect(() => {
@@ -898,14 +913,9 @@ export default function Home() {
               </span>
             </a>
 
-            {/* Ses Açma/Kapama İkonu */}
+            {/* Ses Açma/Kapama Butonu */}
             <button 
-              onClick={() => {
-                if (audioRef.current) {
-                  audioRef.current.muted = !isMuted;
-                  setIsMuted(!isMuted);
-                }
-              }}
+              onClick={() => setIsMuted(!isMuted)}
               className="group flex items-center gap-2 text-white/20 hover:text-blue-400/80 transition-all mr-2"
             >
               <span className="text-[8px] uppercase tracking-[0.2em] opacity-0 group-hover:opacity-100 transition-opacity">
