@@ -885,7 +885,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* SAĞ ALT PANEL - DÜZENLENMİŞ */}
         <div className="flex flex-col items-end gap-3 pointer-events-auto">
           {/* 1. BASE STATUS */}
           <div className="flex items-center gap-4 bg-white/[0.05] px-7 py-3.5 rounded-full border border-white/10 backdrop-blur-xl shadow-xl">
@@ -915,20 +914,54 @@ export default function Home() {
             </span>
           </a>
 
-          {/* 3. SES BUTONU (EN ALTTA) */}
-          <button 
-            onClick={() => setIsMuted(!isMuted)}
-            className="group flex items-center gap-2 text-white/20 hover:text-blue-400 transition-all px-2"
-          >
-            <span className="text-[8px] uppercase tracking-[0.2em] opacity-0 group-hover:opacity-100 transition-opacity">
-              {isMuted ? "Unmute Oracle" : "Mute Oracle"}
-            </span>
-            {isMuted ? (
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
-            ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
-            )}
-          </button>
+          {/* YENİ NESİL SES KONTROL PANELİ */}
+          <div className="flex flex-col items-end gap-3 pointer-events-auto group/audio">
+            <button 
+              onClick={() => setIsMuted(!isMuted)}
+              className={`
+                relative flex items-center gap-4 px-6 py-4 
+                rounded-2xl border transition-all duration-500 
+                backdrop-blur-3xl shadow-[0_0_30px_rgba(0,0,0,0.5)]
+                ${isMuted 
+                  ? "bg-red-500/5 border-red-500/20 opacity-60 hover:opacity-100" 
+                  : "bg-white/[0.03] border-white/10 hover:border-blue-500/40 hover:bg-white/10"}
+              `}
+            >
+              {/* Ses Spektrumu Animasyonu (Sadece ses açıkken oynar) */}
+              <div className="flex items-end gap-[3px] h-4 w-6">
+                {[1, 2, 3, 4].map((i) => (
+                  <div
+                    key={i}
+                    className={`w-[3px] bg-blue-500 rounded-full transition-all duration-300 ${
+                      isMuted ? "h-[2px] bg-red-500" : "animate-audio-bar"
+                    }`}
+                    style={{ 
+                      animationDelay: `${i * 0.15}s`,
+                      height: isMuted ? "2px" : "100%" 
+                    }}
+                  />
+                ))}
+              </div>
+
+              <div className="flex flex-col items-start leading-none">
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-1">
+                  Oracle Voice
+                </span>
+                <span className={`text-[12px] font-bold uppercase tracking-[0.1em] ${isMuted ? "text-red-400" : "text-blue-400"}`}>
+                  {isMuted ? "Deactivated" : "Synchronized"}
+                </span>
+              </div>
+
+              {/* Kısayol İkonu */}
+              <div className={`ml-2 p-2 rounded-lg ${isMuted ? "bg-red-500/10" : "bg-blue-500/10"}`}>
+                {isMuted ? (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f87171" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
+                ) : (
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+                )}
+              </div>
+            </button>
+          </div>
         </div>
       </footer>
     </main>
