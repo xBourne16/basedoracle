@@ -569,7 +569,7 @@ export default function Home() {
 
       {/* NAV */}
       <nav className="fixed top-0 w-full p-8 flex justify-between items-start z-[100]">
-        <div className="flex flex-col group">
+        <div className="flex flex-col group text-left">
           <div className="text-[11px] text-blue-500 tracking-[0.5em] font-black uppercase italic transition-all group-hover:tracking-[0.6em]">
             {txHash
               ? "✦ Oracle Synchronized ✦"
@@ -616,29 +616,54 @@ export default function Home() {
             </span>
           </button>
 
-          {walletAddress &&
-            isDropdownOpen && (
-              <div className="absolute right-0 mt-3 w-[220px] bg-[#0a0a0c]/95 backdrop-blur-2xl border border-white/10 rounded-2xl p-3 shadow-2xl">
-                <div className="px-3 py-2 border-b border-white/5 mb-3">
-                  <p className="text-[9px] text-white/30 uppercase tracking-[0.3em] mb-1">
-                    Connected Wallet
-                  </p>
-
-                  <p className="text-[11px] text-white font-mono break-all">
-                    {walletAddress}
-                  </p>
+          {/* NEW DROPDOWN DESIGN */}
+          {walletAddress && isDropdownOpen && (
+            <div className="absolute right-0 mt-4 w-[280px] rounded-3xl p-[1px] bg-gradient-to-r from-blue-500/40 via-white/10 to-blue-500/20 shadow-2xl animate-in fade-in zoom-in duration-200 origin-top-right">
+              <div className="bg-[#0a0a0c]/95 backdrop-blur-2xl rounded-3xl p-5 border border-white/10 text-left">
+                
+                {/* HEADER */}
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-white/20 flex items-center justify-center font-bold text-black text-xs">
+                    {walletAddress.slice(2, 4).toUpperCase()}
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-[9px] text-white/40 uppercase tracking-[0.2em]">Connected Wallet</span>
+                    <span className="text-[12px] text-white font-mono">
+                      {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
+                    </span>
+                  </div>
                 </div>
 
-                <button
-                  onClick={
-                    disconnectWallet
-                  }
-                  className="w-full px-4 py-3 rounded-xl bg-white/[0.04] hover:bg-red-500/10 border border-white/5 hover:border-red-500/30 transition-all duration-300 text-[10px] font-black uppercase tracking-[0.25em] text-white hover:text-red-400"
-                >
-                  Disconnect
-                </button>
+                {/* STATUS / NETWORK */}
+                <div className="flex items-center justify-between mb-4 px-3 py-2 rounded-xl bg-white/[0.03] border border-white/5">
+                  <span className="text-[9px] text-white/40 uppercase tracking-[0.2em]">Network</span>
+                  <div className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse shadow-[0_0_8px_#4ade80]"></span>
+                    <span className="text-[9px] text-green-400 uppercase tracking-widest font-bold">Base Mainnet</span>
+                  </div>
+                </div>
+
+                {/* ACTIONS */}
+                <div className="flex flex-col gap-2">
+                  <button
+                    onClick={() => {
+                      navigator.clipboard.writeText(walletAddress);
+                      setIsDropdownOpen(false);
+                    }}
+                    className="w-full px-4 py-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 transition-all text-[10px] uppercase tracking-[0.2em] text-white/70 hover:text-white text-center"
+                  >
+                    Copy Address
+                  </button>
+                  <button
+                    onClick={disconnectWallet}
+                    className="w-full px-4 py-3 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/40 transition-all text-[10px] uppercase tracking-[0.2em] text-red-300 hover:text-red-200 text-center font-bold"
+                  >
+                    Disconnect Wallet
+                  </button>
+                </div>
               </div>
-            )}
+            </div>
+          )}
         </div>
       </nav>
 
@@ -777,7 +802,7 @@ export default function Home() {
       {/* FOOTER */}
       <footer className="fixed bottom-10 w-full px-12 flex justify-between items-end z-[40] pointer-events-none">
         <div className="flex flex-col gap-4 group pointer-events-auto">
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1 text-left">
             <span className="text-[13px] text-blue-500 font-black uppercase tracking-[0.4em]">
               Weekend Protocol:
             </span>
