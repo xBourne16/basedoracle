@@ -1,10 +1,9 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { ethers } from "ethers";
 import { quotes } from "./quotes";
-import { songCategories } from "./songCategories";
 import "./globals.css";
 
 export default function Home() {
@@ -42,14 +41,6 @@ export default function Home() {
   const [luckyNumber, setLuckyNumber] =
     useState<number | null>(null);
 
-  // MUSIC PLAYER STATES
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [currentSongIndex, setCurrentSongIndex] = useState(0);
-  const [selectedCategoryId, setSelectedCategoryId] = useState(songCategories[0].id);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  const currentPlaylist = songCategories.find(cat => cat.id === selectedCategoryId)?.songs || [];
-
   // CONTRACT ADDRESS
   const CONTRACT_ADDRESS =
     "0x10d57710D44e56A76D8CC3Be57879A0131879e3b";
@@ -59,57 +50,6 @@ export default function Home() {
     "function consult() public",
     "function getRemainingTime(address user) view returns (uint256)",
   ];
-
-  // AUDIO INIT
-  useEffect(() => {
-    audioRef.current = new Audio();
-    audioRef.current.onended = () => handleNextSong();
-    return () => {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current = null;
-      }
-    };
-  }, []);
-
-  // CATEGORY CHANGE & RANDOM START
-  const handleCategoryChange = (categoryId: string) => {
-    setSelectedCategoryId(categoryId);
-    const categorySongs = songCategories.find(cat => cat.id === categoryId)?.songs || [];
-    
-    if (categorySongs.length > 0) {
-      const randomIndex = Math.floor(Math.random() * categorySongs.length);
-      setCurrentSongIndex(randomIndex);
-      
-      if (audioRef.current) {
-        audioRef.current.src = categorySongs[randomIndex].url;
-        if (isPlaying) {
-          audioRef.current.play().catch(e => console.log("Playback error:", e));
-        }
-      }
-    }
-  };
-
-  const togglePlay = () => {
-    if (!audioRef.current || !currentPlaylist[currentSongIndex]) return;
-    if (!audioRef.current.src) audioRef.current.src = currentPlaylist[currentSongIndex].url;
-    
-    if (isPlaying) {
-      audioRef.current.pause();
-    } else {
-      audioRef.current.play().catch(() => console.log("Playback blocked"));
-    }
-    setIsPlaying(!isPlaying);
-  };
-
-  const handleNextSong = () => {
-    const nextIndex = (currentSongIndex + 1) % currentPlaylist.length;
-    setCurrentSongIndex(nextIndex);
-    if (audioRef.current) {
-      audioRef.current.src = currentPlaylist[nextIndex].url;
-      if (isPlaying) audioRef.current.play().catch(e => console.log(e));
-    }
-  };
 
   useEffect(() => {
     const hour = new Date().getHours();
@@ -631,7 +571,7 @@ export default function Home() {
       <nav className="fixed top-0 w-full p-8 flex justify-between items-start z-[100]">
         <div className="flex flex-col group text-left">
           <div className="text-[11px] text-blue-500 tracking-[0.5em] font-black uppercase italic transition-all group-hover:tracking-[0.6em]">
-            {txHash || quote
+            {txHash
               ? "✦ Oracle Synchronized ✦"
               : `◈ ${greeting}`}
           </div>
@@ -772,7 +712,7 @@ export default function Home() {
           <div className="min-h-[260px] flex flex-col items-center justify-center text-center">
             {/* DAILY TITLE */}
             {quote && (
-              <span className="mb-6 text-[11px] uppercase tracking-[0.45em] text-blue-400 font-black italic animate-in fade-in duration-700">
+              <span className="mb-6 text-[11px] uppercase tracking-[0.45em] text-blue-400 font-black italic">
                 Your Quote Of The Day
               </span>
             )}
@@ -791,7 +731,7 @@ export default function Home() {
             {/* LUCKY NUMBER */}
             {quote &&
               luckyNumber && (
-                <div className="mt-10 flex flex-col items-center animate-in slide-in-from-bottom-4 duration-1000">
+                <div className="mt-10 flex flex-col items-center">
                   <span className="text-[10px] uppercase tracking-[0.4em] text-white/30 mb-3 italic">
                     Your Lucky Number Today
                   </span>
@@ -803,44 +743,11 @@ export default function Home() {
                   </div>
                 </div>
               )}
-
-            {/* ZETTA PLAYER - Sadece TX Atanlara Görünür */}
-            {quote && (
-                <div className="mt-12 pt-8 border-t border-white/5 w-full animate-in fade-in duration-1000">
-                   <div className="flex flex-wrap justify-center gap-2 mb-6">
-                    {songCategories.map((cat) => (
-                      <button
-                        key={cat.id}
-                        onClick={() => handleCategoryChange(cat.id)}
-                        className={`px-4 py-1.5 rounded-full text-[9px] uppercase tracking-widest font-bold transition-all ${selectedCategoryId === cat.id ? "bg-blue-600 text-white shadow-[0_0_10px_blue]" : "bg-white/5 text-white/40 hover:bg-white/10"}`}
-                      >
-                        {cat.title}
-                      </button>
-                    ))}
-                  </div>
-
-                  <div className="flex items-center justify-center gap-6">
-                    <button 
-                        onClick={togglePlay} 
-                        className="text-[11px] font-black text-blue-500 hover:text-blue-400 uppercase tracking-[0.3em] italic transition-colors active:scale-95"
-                    >
-                      {isPlaying ? "[ STOP CYCLE ]" : "[ START AUDIO ]"}
-                    </button>
-                    <div className="h-[1px] w-12 bg-blue-500/30"></div>
-                    <div className="flex flex-col items-start min-w-[140px]">
-                        <span className="text-[8px] text-blue-500/50 uppercase tracking-tighter mb-1 font-bold">Now Streaming:</span>
-                        <span className="text-[10px] text-white font-mono uppercase tracking-[0.1em] italic truncate max-w-[180px]">
-                            {currentPlaylist[currentSongIndex]?.name || "Select Era"}
-                        </span>
-                    </div>
-                  </div>
-                </div>
-            )}
           </div>
 
           {/* COOL TIMER */}
           {cooldown > 0 && (
-            <div className="flex flex-col items-center justify-center mb-10 animate-pulse mt-10">
+            <div className="flex flex-col items-center justify-center mb-10 animate-pulse">
               <div className="relative">
                 <div className="absolute inset-0 rounded-full bg-blue-500/20 blur-3xl"></div>
 
@@ -884,7 +791,7 @@ export default function Home() {
                 ? "Consulting..."
                 : cooldown > 0
                 ? "Oracle Sleeping"
-                : txHash || quote
+                : txHash
                 ? "Fate Decrypted"
                 : "Consult Fate"}
             </button>
