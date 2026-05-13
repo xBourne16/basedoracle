@@ -913,8 +913,24 @@ export default function Home() {
               </span>
             </a>
 
-            {/* YENİ NESİL SES KONTROL PANELİ */}
-<div className="flex flex-col items-end gap-3 pointer-events-auto group/audio">
+<div className="flex flex-col items-end gap-3 pointer-events-auto">
+  
+  {/* 1. BASE LOGO PANEL (EN ÜSTTE) */}
+  <div className="flex items-center gap-4 bg-white/[0.05] px-7 py-3.5 rounded-full border border-white/10 backdrop-blur-xl shadow-xl">
+    <span className="text-[11px] text-blue-500 font-black tracking-widest uppercase italic leading-none">
+      You&apos;re now based
+    </span>
+    <div className="relative w-14 h-4 flex items-center">
+      <Image
+        src="/base_logo.png"
+        alt="Base Logo"
+        fill
+        className="object-contain brightness-200"
+      />
+    </div>
+  </div>
+
+  {/* 2. YENİ SES PANELİ (ORTADA) */}
   <button 
     onClick={() => setIsMuted(!isMuted)}
     className={`
@@ -926,7 +942,6 @@ export default function Home() {
         : "bg-white/[0.03] border-white/10 hover:border-blue-500/40 hover:bg-white/10"}
     `}
   >
-    {/* Ses Spektrumu Animasyonu (Sadece ses açıkken oynar) */}
     <div className="flex items-end gap-[3px] h-4 w-6">
       {[1, 2, 3, 4].map((i) => (
         <div
@@ -941,7 +956,6 @@ export default function Home() {
         />
       ))}
     </div>
-
     <div className="flex flex-col items-start leading-none">
       <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-1">
         Oracle Voice
@@ -950,8 +964,6 @@ export default function Home() {
         {isMuted ? "Deactivated" : "Synchronized"}
       </span>
     </div>
-
-    {/* Kısayol İkonu */}
     <div className={`ml-2 p-2 rounded-lg ${isMuted ? "bg-red-500/10" : "bg-blue-500/10"}`}>
       {isMuted ? (
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f87171" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
@@ -960,6 +972,21 @@ export default function Home() {
       )}
     </div>
   </button>
+
+  {/* 3. X ADRESİ (EN ALTTA) */}
+  <div className="flex flex-col items-end gap-2">
+    <a
+      href="https://x.com/np0int"
+      target="_blank"
+      rel="noopener noreferrer"
+      className="group flex items-center gap-3 bg-white/[0.02] hover:bg-white/[0.08] border border-white/5 px-6 py-2.5 rounded-full transition-all duration-500 backdrop-blur-xl"
+    >
+      <span className="text-[10px] text-white/40 font-mono tracking-[0.3em] group-hover:text-blue-400 uppercase transition-colors">
+        @np0int
+      </span>
+    </a>
+  </div>
+  
 </div>
           </div>
         </div>
