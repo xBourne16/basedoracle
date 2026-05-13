@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { ethers } from "ethers";
 import { quotes } from "./quotes";
@@ -22,6 +22,9 @@ export default function Home() {
 
   const [greeting, setGreeting] =
     useState("GM");
+
+  const [isMuted, setIsMuted] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   const [isModalOpen, setIsModalOpen] =
     useState(false);
@@ -63,6 +66,11 @@ export default function Home() {
     } else {
       setGreeting("The Midnight Watch");
     }
+
+    // Ses Hazırlığı
+    audioRef.current = new Audio("/mystic-temple.mp3");
+    audioRef.current.loop = true;
+    audioRef.current.volume = 0.15;
   }, []);
 
   // DAILY DATA LOAD
@@ -274,6 +282,11 @@ export default function Home() {
 
   const handleAction = async () => {
     if (isAnimating) return;
+
+    // Ses Başlatma (Mistik hava başlasın)
+    if (audioRef.current && audioRef.current.paused) {
+      audioRef.current.play().catch(() => console.log("Audio play blocked"));
+    }
 
     if (!walletAddress) {
       setIsModalOpen(true);
@@ -873,16 +886,38 @@ export default function Home() {
             </div>
           </div>
 
-          <a
-            href="https://x.com/np0int"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group flex items-center gap-3 bg-white/[0.02] hover:bg-white/[0.08] border border-white/5 px-6 py-2.5 rounded-full transition-all duration-500 backdrop-blur-xl translate-x-[-10px]"
-          >
-            <span className="text-[10px] text-white/40 font-mono tracking-[0.3em] group-hover:text-blue-400 uppercase transition-colors">
-              @np0int
-            </span>
-          </a>
+          <div className="flex flex-col items-end gap-2">
+            <a
+              href="https://x.com/np0int"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group flex items-center gap-3 bg-white/[0.02] hover:bg-white/[0.08] border border-white/5 px-6 py-2.5 rounded-full transition-all duration-500 backdrop-blur-xl"
+            >
+              <span className="text-[10px] text-white/40 font-mono tracking-[0.3em] group-hover:text-blue-400 uppercase transition-colors">
+                @np0int
+              </span>
+            </a>
+
+            {/* Ses Açma/Kapama İkonu */}
+            <button 
+              onClick={() => {
+                if (audioRef.current) {
+                  audioRef.current.muted = !isMuted;
+                  setIsMuted(!isMuted);
+                }
+              }}
+              className="group flex items-center gap-2 text-white/20 hover:text-blue-400/80 transition-all mr-2"
+            >
+              <span className="text-[8px] uppercase tracking-[0.2em] opacity-0 group-hover:opacity-100 transition-opacity">
+                {isMuted ? "Unmute Oracle" : "Mute Oracle"}
+              </span>
+              {isMuted ? (
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line></svg>
+              ) : (
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M11 5L6 9H2v6h4l5 4V5z"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+              )}
+            </button>
+          </div>
         </div>
       </footer>
     </main>
