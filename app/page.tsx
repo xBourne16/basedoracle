@@ -806,10 +806,7 @@ setOracleHistory(updatedHistory);
                     <span className="text-[9px] text-white/40 uppercase tracking-[0.2em]">Connected Wallet</span>
                     <span className="text-[12px] text-white font-mono">
                       {baseName ||
-  `${walletAddress.slice(
-    0,
-    6
-  )}...${walletAddress.slice(-4)}`}
+  `${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}`}
                     </span>
                   </div>
                 </div>
