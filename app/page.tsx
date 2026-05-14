@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { ethers } from "ethers";
-import { quotes } from "./quotes";
+import { quotes, cooldownMessages } from "./quotes";
 import "./globals.css";
 
 export default function Home() {
@@ -860,7 +860,7 @@ export default function Home() {
               {isAnimating
                 ? "Consulting..."
                 : cooldown > 0
-                ? "Oracle Sleeping"
+                ? cooldownMessages
                 : txHash
                 ? "Fate Decrypted"
                 : "Consult Fate"}
