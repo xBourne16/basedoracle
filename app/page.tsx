@@ -145,19 +145,25 @@ useEffect(() => {
 
   const fetchBasename = async () => {
     try {
-      setBaseName(null);
+      const provider =
+        new ethers.JsonRpcProvider(
+          "https://mainnet.base.org"
+        );
 
-      const response = await fetch(
-        `https://www.base.org/api/basenames/${walletAddress}`
-      );
+      const name =
+        await provider.lookupAddress(
+          walletAddress
+        );
 
-      const data = await response.json();
-
-      if (data?.basename) {
-        setBaseName(data.basename);
+      if (name) {
+        setBaseName(name);
+      } else {
+        setBaseName(null);
       }
     } catch (err) {
-      console.log("Basename fetch failed");
+      console.log(
+        "Basename lookup failed"
+      );
     }
   };
 
