@@ -1,4 +1,4 @@
-"use client";
+"use client"; 
 
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
@@ -902,19 +902,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* 2. X LINK */}
-          <a
-            href="https://x.com/np0int"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group flex items-center gap-3 bg-white/[0.02] hover:bg-white/[0.08] border border-white/5 px-6 py-2.5 rounded-full transition-all duration-500 backdrop-blur-xl"
-          >
-            <span className="text-[10px] text-white/40 font-mono tracking-[0.3em] group-hover:text-blue-400 uppercase transition-colors">
-              @np0int
-            </span>
-          </a>
-
-          {/* YENİ NESİL SES KONTROL PANELİ */}
+         {/* YENİ NESİL SES KONTROL PANELİ */}
           <div className="flex flex-col items-end gap-3 pointer-events-auto group/audio">
             <button 
               onClick={() => setIsMuted(!isMuted)}
@@ -943,6 +931,18 @@ export default function Home() {
                 ))}
               </div>
 
+              {/* 2. X LINK */}
+          <a
+            href="https://x.com/np0int"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group flex items-center gap-3 bg-white/[0.02] hover:bg-white/[0.08] border border-white/5 px-6 py-2.5 rounded-full transition-all duration-500 backdrop-blur-xl"
+          >
+            <span className="text-[10px] text-white/40 font-mono tracking-[0.3em] group-hover:text-blue-400 uppercase transition-colors">
+              @np0int
+            </span>
+          </a>
+
               <div className="flex flex-col items-start leading-none">
                 <span className="text-[10px] font-black uppercase tracking-[0.2em] text-white/40 mb-1">
                   Oracle Voice
@@ -966,4 +966,4 @@ export default function Home() {
       </footer>
     </main>
   );
-}
+} 
