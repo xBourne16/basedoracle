@@ -943,9 +943,9 @@ setOracleHistory(updatedHistory);
 className="
 fixed
 left-8
-top-[23%]
+top-[20%]
 z-[70]
-w-[320px]
+w-[300px]
 hidden
 2xl:flex
 flex-col
