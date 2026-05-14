@@ -43,6 +43,8 @@ export default function Home() {
   // DAILY LUCKY NUMBER
   const [luckyNumber, setLuckyNumber] =
     useState<number | null>(null);
+    const [shareUrl, setShareUrl] =
+  useState("");
 
   // CONTRACT ADDRESS
   const CONTRACT_ADDRESS =
@@ -401,6 +403,17 @@ export default function Home() {
         await contract.consult();
 
       setTxHash(tx.hash);
+      const tweet = encodeURIComponent(
+  `🔮 The Oracle has spoken.\n\n` +
+  `Lucky Number: ${generateLuckyNumber(walletAddress)}\n\n` +
+  `TX: https://basescan.org/tx/${tx.hash}\n\n` +
+  `Consult your fate:\n` +
+  `${window.location.origin}`
+);
+
+setShareUrl(
+  `https://twitter.com/intent/tweet?text=${tweet}`
+);
 
       // DAILY QUOTE
       const dailyQuote =
@@ -757,6 +770,44 @@ export default function Home() {
             </p>
 
             {/* LUCKY NUMBER */}
+            {/* SHARE PROPHECY */}
+{quote && txHash && (
+  <a
+    href={shareUrl}
+    target="_blank"
+    rel="noopener noreferrer"
+    className="
+      mt-8 inline-flex items-center gap-3
+      px-6 py-3
+      rounded-full
+      bg-white/[0.04]
+      border border-white/10
+      hover:border-blue-500/40
+      hover:bg-blue-500/10
+      transition-all duration-300
+      group
+    "
+  >
+    <span className="text-[10px] uppercase tracking-[0.3em] text-white/50 group-hover:text-blue-400 font-black">
+      Share Prophecy
+    </span>
+
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="#3b82f6"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M4 4l16 16"></path>
+      <path d="M20 4L9 15"></path>
+    </svg>
+  </a>
+)}
             {quote &&
               luckyNumber && (
                 <div className="mt-10 flex flex-col items-center">
