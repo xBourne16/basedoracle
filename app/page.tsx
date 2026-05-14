@@ -45,6 +45,8 @@ export default function Home() {
     useState<number | null>(null);
     const [shareUrl, setShareUrl] =
   useState("");
+  const [streak, setStreak] =
+  useState<number>(0);
   const [oracleHistory, setOracleHistory] = useState<
   {
     quote: string;
@@ -227,6 +229,14 @@ useEffect(() => {
 
     return (charSum % 999) + 1;
   };
+
+  const getStreakBadge = (days: number) => {
+  if (days >= 30) return "ORACLE PRIME";
+  if (days >= 14) return "ASCENDED";
+  if (days >= 7) return "PROPHET";
+  if (days >= 3) return "DISCIPLE";
+  return "SEEKER";
+};
 
   const connectWallet = async (
     walletType:
@@ -468,6 +478,41 @@ setShareUrl(
         );
 
       setLuckyNumber(number);
+      // UPDATE STREAK
+const todayKey =
+  new Date().toISOString().split("T")[0];
+
+const yesterdayKey =
+  new Date(Date.now() - 86400000)
+    .toISOString()
+    .split("T")[0];
+
+const lastConsult =
+  localStorage.getItem(
+    `oracle_last_consult_${walletAddress}`
+  );
+
+let newStreak = streak;
+
+if (lastConsult === todayKey) {
+  newStreak = streak;
+} else if (lastConsult === yesterdayKey) {
+  newStreak = streak + 1;
+} else {
+  newStreak = 1;
+}
+
+localStorage.setItem(
+  `oracle_last_consult_${walletAddress}`,
+  todayKey
+);
+
+localStorage.setItem(
+  `oracle_streak_${walletAddress}`,
+  newStreak.toString()
+);
+
+setStreak(newStreak);
       // SAVE HISTORY
 const historyItem = {
   quote: dailyQuote,
@@ -830,6 +875,20 @@ setOracleHistory(updatedHistory);
             </p>
 
             {/* LUCKY NUMBER */}
+            {/* DAILY STREAK */}
+{quote && streak > 0 && (
+  <div className="mt-8 flex flex-col items-center">
+    <span className="text-[10px] uppercase tracking-[0.4em] text-white/30 mb-3 italic">
+      Oracle Streak
+    </span>
+
+    <div className="px-7 py-3 rounded-full border border-blue-500/30 bg-blue-500/10 backdrop-blur-xl shadow-[0_0_30px_rgba(37,99,235,0.2)]">
+      <span className="text-[13px] font-black text-blue-400 tracking-[0.25em] uppercase">
+        ✦ {streak} Day — {getStreakBadge(streak)}
+      </span>
+    </div>
+  </div>
+)}
             {/* SHARE PROPHECY */}
 {quote && txHash && (
   <a
