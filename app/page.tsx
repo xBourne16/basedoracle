@@ -645,53 +645,95 @@ export default function Home() {
           </button>
 
           {/* NEW DROPDOWN DESIGN */}
-          {walletAddress && isDropdownOpen && (
-            <div className="absolute right-0 mt-4 w-[280px] rounded-3xl p-[1px] bg-gradient-to-r from-blue-500/40 via-white/10 to-blue-500/20 shadow-2xl animate-in fade-in zoom-in duration-200 origin-top-right">
-              <div className="bg-[#0a0a0c]/95 backdrop-blur-2xl rounded-3xl p-5 border border-white/10 text-left">
-                
-                {/* HEADER */}
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-white/20 flex items-center justify-center font-bold text-black text-xs">
-                    {walletAddress.slice(2, 4).toUpperCase()}
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-[9px] text-white/40 uppercase tracking-[0.2em]">Connected Wallet</span>
-                    <span className="text-[12px] text-white font-mono">
-                      {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
-                    </span>
-                  </div>
-                </div>
+{walletAddress && isDropdownOpen && (
+  <div className="absolute right-0 mt-4 w-[290px] overflow-hidden rounded-[32px] border border-blue-500/20 bg-black/60 backdrop-blur-3xl shadow-[0_0_60px_rgba(37,99,235,0.18)]">
 
-                {/* STATUS / NETWORK */}
-                <div className="flex items-center justify-between mb-4 px-3 py-2 rounded-xl bg-white/[0.03] border border-white/5">
-                  <span className="text-[9px] text-white/40 uppercase tracking-[0.2em]">Network</span>
-                  <div className="flex items-center gap-2">
-                    <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse shadow-[0_0_8px_#4ade80]"></span>
-                    <span className="text-[9px] text-green-400 uppercase tracking-widest font-bold">Base Mainnet</span>
-                  </div>
-                </div>
+    {/* TOP GLOW */}
+    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-transparent to-transparent pointer-events-none" />
 
-                {/* ACTIONS */}
-                <div className="flex flex-col gap-2">
-                  <button
-                    onClick={() => {
-                      navigator.clipboard.writeText(walletAddress);
-                      setIsDropdownOpen(false);
-                    }}
-                    className="w-full px-4 py-3 rounded-xl bg-white/[0.03] hover:bg-white/[0.08] border border-white/5 transition-all text-[10px] uppercase tracking-[0.2em] text-white/70 hover:text-white text-center"
-                  >
-                    Copy Address
-                  </button>
-                  <button
-                    onClick={disconnectWallet}
-                    className="w-full px-4 py-3 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 hover:border-red-500/40 transition-all text-[10px] uppercase tracking-[0.2em] text-red-300 hover:text-red-200 text-center font-bold"
-                  >
-                    Disconnect Wallet
-                  </button>
-                </div>
-              </div>
+    <div className="relative p-5">
+
+      {/* HEADER */}
+      <div className="flex items-center justify-between mb-6">
+
+        <div className="flex items-center gap-3">
+
+          {/* ORB */}
+          <div className="relative">
+            <div className="absolute inset-0 bg-blue-500 blur-xl opacity-60 rounded-full" />
+
+            <div className="relative w-11 h-11 rounded-full bg-gradient-to-br from-blue-400 to-blue-700 flex items-center justify-center text-black font-black text-sm">
+              {walletAddress.slice(2,4).toUpperCase()}
             </div>
-          )}
+          </div>
+
+          <div>
+            <p className="text-[9px] uppercase tracking-[0.35em] text-white/30">
+              Soul Linked
+            </p>
+
+            <p className="text-[12px] font-mono text-white mt-1">
+              {walletAddress.slice(0,6)}...
+              {walletAddress.slice(-4)}
+            </p>
+          </div>
+        </div>
+
+        {/* STATUS */}
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+
+          <span className="text-[9px] uppercase tracking-[0.3em] text-emerald-400">
+            Active
+          </span>
+        </div>
+      </div>
+
+      {/* NETWORK */}
+      <div className="mb-4 rounded-2xl border border-white/5 bg-white/[0.03] px-4 py-3">
+
+        <div className="flex items-center justify-between">
+
+          <div>
+            <p className="text-[8px] uppercase tracking-[0.3em] text-white/30 mb-1">
+              Network
+            </p>
+
+            <p className="text-[11px] text-white tracking-[0.2em] uppercase">
+              Base Mainnet
+            </p>
+          </div>
+
+          <div className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_12px_rgba(59,130,246,1)]" />
+        </div>
+      </div>
+
+      {/* ACTIONS */}
+      <div className="flex flex-col gap-3">
+
+        <button
+          onClick={() =>
+            navigator.clipboard.writeText(walletAddress)
+          }
+          className="group h-[52px] rounded-2xl border border-white/5 bg-white/[0.03] hover:bg-white/[0.06] transition-all"
+        >
+          <span className="text-[10px] uppercase tracking-[0.35em] text-white/60 group-hover:text-white">
+            Copy Address
+          </span>
+        </button>
+
+        <button
+          onClick={disconnectWallet}
+          className="group h-[56px] rounded-2xl border border-red-500/20 bg-red-500/10 hover:bg-red-500/20 transition-all shadow-[0_0_25px_rgba(239,68,68,0.1)]"
+        >
+          <span className="text-[10px] uppercase tracking-[0.35em] text-red-300 group-hover:text-red-200">
+            Disconnect Soul
+          </span>
+        </button>
+      </div>
+    </div>
+  </div>
+)}
         </div>
       </nav>
 
