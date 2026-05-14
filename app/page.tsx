@@ -147,7 +147,7 @@ useEffect(() => {
     try {
       const provider =
         new ethers.JsonRpcProvider(
-          "https://mainnet.base.org"
+          "https://ethereum-rpc.publicnode.com"
         );
 
       const name =
