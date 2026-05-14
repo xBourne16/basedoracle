@@ -45,6 +45,14 @@ export default function Home() {
     useState<number | null>(null);
     const [shareUrl, setShareUrl] =
   useState("");
+  const [oracleHistory, setOracleHistory] = useState<
+  {
+    quote: string;
+    luckyNumber: number;
+    txHash: string;
+    date: string;
+  }[]
+>([]);
 
   // CONTRACT ADDRESS
   const CONTRACT_ADDRESS =
@@ -115,6 +123,18 @@ export default function Home() {
       setLuckyNumber(Number(savedLucky));
     }
   }, [walletAddress]);
+  // ORACLE HISTORY LOAD
+useEffect(() => {
+  if (!walletAddress) return;
+
+  const history = JSON.parse(
+    localStorage.getItem(
+      `oracle_history_${walletAddress}`
+    ) || "[]"
+  );
+
+  setOracleHistory(history);
+}, [walletAddress]);
 
   // LIVE BLOCKCHAIN COOLDOWN TIMER
   useEffect(() => {
@@ -448,6 +468,31 @@ setShareUrl(
         );
 
       setLuckyNumber(number);
+      // SAVE HISTORY
+const historyItem = {
+  quote: dailyQuote,
+  luckyNumber: number,
+  txHash: tx.hash,
+  date: new Date().toLocaleDateString(),
+};
+
+const existingHistory = JSON.parse(
+  localStorage.getItem(
+    `oracle_history_${walletAddress}`
+  ) || "[]"
+);
+
+const updatedHistory = [
+  historyItem,
+  ...existingHistory,
+].slice(0, 10);
+
+localStorage.setItem(
+  `oracle_history_${walletAddress}`,
+  JSON.stringify(updatedHistory)
+);
+
+setOracleHistory(updatedHistory);
 
       // SAVE DAILY DATA
       const today =
@@ -892,7 +937,63 @@ setShareUrl(
           </div>
         </div>
       </div>
+{/* ORACLE HISTORY PANEL */}
+{oracleHistory.length > 0 && (
+  <div className="relative z-[60] mt-12 w-full max-w-2xl md:-translate-x-12">
+    <div className="rounded-[40px] border border-white/10 bg-white/[0.03] backdrop-blur-2xl p-8 shadow-2xl">
 
+      <div className="flex items-center justify-between mb-6">
+        <h3 className="text-[11px] uppercase tracking-[0.45em] text-blue-400 font-black italic">
+          Oracle History
+        </h3>
+
+        <span className="text-[10px] text-white/30 uppercase tracking-[0.3em]">
+          Last {oracleHistory.length} Prophecies
+        </span>
+      </div>
+
+      <div className="flex flex-col gap-4">
+        {oracleHistory.map((item, index) => (
+          <div
+            key={index}
+            className="rounded-2xl border border-white/5 bg-black/20 p-5 hover:border-blue-500/30 transition-all"
+          >
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-[10px] text-blue-400 uppercase tracking-[0.3em] font-bold">
+                #{oracleHistory.length - index}
+              </span>
+
+              <span className="text-[10px] text-white/30">
+                {item.date}
+              </span>
+            </div>
+
+            <p className="text-white/90 italic leading-relaxed text-[15px]">
+              "{item.quote}"
+            </p>
+
+            <div className="mt-4 flex items-center justify-between">
+              <div className="px-4 py-2 rounded-full bg-blue-500/10 border border-blue-500/20">
+                <span className="text-blue-400 text-[11px] font-black tracking-[0.2em]">
+                  ✦ {item.luckyNumber}
+                </span>
+              </div>
+
+              <a
+                href={`https://basescan.org/tx/${item.txHash}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[10px] uppercase tracking-[0.25em] text-white/40 hover:text-blue-400 transition-colors"
+              >
+                View TX
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+)}
       {/* FOOTER */}
 <footer className="fixed bottom-10 w-full px-12 flex justify-between items-end z-[40] pointer-events-none">
 
