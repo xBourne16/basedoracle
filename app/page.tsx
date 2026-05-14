@@ -403,12 +403,27 @@ export default function Home() {
         await contract.consult();
 
       setTxHash(tx.hash);
-      const tweet = encodeURIComponent(
-  `🔮 The Oracle has spoken.\n\n` +
-  `Lucky Number: ${generateLuckyNumber(walletAddress)}\n\n` +
-  `TX: https://basescan.org/tx/${tx.hash}\n\n` +
-  `Consult your fate:\n` +
-  `${window.location.origin}`
+    const prophecyQuote =
+  quotes[
+    getUniqueQuoteIndex(
+      walletAddress,
+      tx.hash
+    )
+  ];
+
+const prophecyNumber =
+  generateLuckyNumber(walletAddress);
+
+const tweet = encodeURIComponent(
+  `🔮 BASED ORACLE PROPHECY 🔮\n\n` +
+
+  `“${prophecyQuote}”\n\n` +
+
+  `✦ Lucky Number: ${prophecyNumber}\n\n` +
+
+  `✦ Oracle TX:\nhttps://basescan.org/tx/${tx.hash}\n\n` +
+
+  `Consult your fate:\n${window.location.origin}`
 );
 
 setShareUrl(
