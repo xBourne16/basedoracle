@@ -569,7 +569,7 @@ setOracleHistory(updatedHistory);
   };
 
   return (
-    <main className="relative flex min-h-screen flex-col items-center justify-center p-4 bg-[#020204] overflow-hidden selection:bg-blue-600/40">
+    <main className="relative flex min-h-screen flex-col items-center justify-center p-4 bg-[#020204] overflow-y-auto overflow-x-hidden selection:bg-blue-600/40">
       {/* WALLET MODAL */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl">
@@ -939,7 +939,7 @@ setOracleHistory(updatedHistory);
       </div>
 {/* ORACLE HISTORY PANEL */}
 {oracleHistory.length > 0 && (
-  <div className="relative z-[60] mt-12 w-full max-w-2xl md:-translate-x-12">
+  <div className="relative z-[60] mt-4 w-full max-w-2xl md:-translate-x-12">
     <div className="rounded-[40px] border border-white/10 bg-white/[0.03] backdrop-blur-2xl p-8 shadow-2xl">
 
       <div className="flex items-center justify-between mb-6">
