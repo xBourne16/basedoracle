@@ -16,6 +16,8 @@ export default function Home() {
 
   const [walletAddress, setWalletAddress] =
     useState<string | null>(null);
+    const [baseName, setBaseName] =
+  useState<string | null>(null);
 
   const [txHash, setTxHash] =
     useState<string | null>(null);
@@ -137,7 +139,34 @@ useEffect(() => {
 
   setOracleHistory(history);
 }, [walletAddress]);
+// BASENAME RESOLVE
+useEffect(() => {
+  if (!walletAddress) return;
 
+  const fetchBasename = async () => {
+    try {
+      const provider =
+        new ethers.JsonRpcProvider(
+          "https://mainnet.base.org"
+        );
+
+      const name =
+        await provider.lookupAddress(
+          walletAddress
+        );
+
+      if (name) {
+        setBaseName(name);
+      }
+    } catch (err) {
+      console.log(
+        "Basename lookup failed"
+      );
+    }
+  };
+
+  fetchBasename();
+}, [walletAddress]);
   // LIVE BLOCKCHAIN COOLDOWN TIMER
   useEffect(() => {
     if (!walletAddress) return;
@@ -751,14 +780,15 @@ setOracleHistory(updatedHistory);
             <div className="w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_10px_rgba(59,130,246,0.8)] animate-pulse"></div>
 
             <span className="text-[11px] font-black text-white uppercase tracking-[0.25em]">
-              {walletAddress
-                ? `${walletAddress.substring(
-                    0,
-                    6
-                  )}...${walletAddress.slice(
-                    -4
-                  )}`
-                : "Connect Wallet"}
+{walletAddress
+  ? baseName ||
+    `${walletAddress.substring(
+      0,
+      6
+    )}...${walletAddress.slice(
+      -4
+    )}`
+  : "Connect Wallet"}
             </span>
           </button>
 
@@ -775,7 +805,11 @@ setOracleHistory(updatedHistory);
                   <div className="flex flex-col">
                     <span className="text-[9px] text-white/40 uppercase tracking-[0.2em]">Connected Wallet</span>
                     <span className="text-[12px] text-white font-mono">
-                      {walletAddress.slice(0, 6)}...{walletAddress.slice(-4)}
+                      {baseName ||
+  `${walletAddress.slice(
+    0,
+    6
+  )}...${walletAddress.slice(-4)}`}
                     </span>
                   </div>
                 </div>
