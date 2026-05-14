@@ -939,8 +939,19 @@ setOracleHistory(updatedHistory);
       </div>
 {/* ORACLE HISTORY PANEL */}
 {oracleHistory.length > 0 && (
-  <div className="relative z-[60] mt-4 w-full max-w-2xl md:-translate-x-12">
-    <div className="rounded-[40px] border border-white/10 bg-white/[0.03] backdrop-blur-2xl p-8 shadow-2xl">
+<div
+className="
+fixed
+left-8
+top-[23%]
+z-[70]
+w-[320px]
+hidden
+2xl:flex
+flex-col
+  "
+>
+    <div className="rounded-[28px] border border-white/10 bg-white/[0.03] backdrop-blur-2xl p-5 shadow-2xl">
 
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-[11px] uppercase tracking-[0.45em] text-blue-400 font-black italic">
