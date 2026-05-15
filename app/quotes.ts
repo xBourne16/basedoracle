@@ -194,5 +194,44 @@ export const quotes = [
   "Hard work is a talent. — Cristiano Ronaldo",
   "The version of you that doesn't quit is unstoppable. — Unknown",
   "Stop waiting for permission; start creating results. — Unknown",
-  "Discipline is the highest form of self-love. — Unknown"
+  "Discipline is the highest form of self-love. — Unknown",
+
+"The greatest battle is the war against ignorance. — Mustafa Kemal Atatürk",
+
+"Peace at home, peace in the world. — Mustafa Kemal Atatürk",
+
+"The impediment to action advances action. — Marcus Aurelius",
+
+"He who conquers himself is the mightiest warrior. — Confucius",
+
+"Do not fear failure but rather fear not trying. — Roy T. Bennett",
+
+"Be tolerant with others and strict with yourself. — Marcus Aurelius",
+
+"The soul becomes dyed with the color of its thoughts. — Marcus Aurelius",
+
+"Knowing is not enough, we must apply. — Goethe",
+
+"Take a rest; a field that has rested gives a beautiful crop. — Ovid",
+
+"Absorb what is useful. Reject what is useless. — Bruce Lee",
+
+"I hated every minute of training, but I said: don’t quit. — Muhammad Ali",
+
+"Talent without working hard is nothing. — Cristiano Ronaldo",
+
+"Life opens up opportunities to you, and you either take them or you stay afraid. — Jim Carrey",
+
+"Desperation is a necessary ingredient to learning anything. — Jim Carrey",
+
+"If you want to shine like a sun, first burn like a sun. — A. P. J. Abdul Kalam",
+
+"The people who are crazy enough to think they can change the world are the ones who do. — Steve Jobs",
+
+"The future belongs to those who believe in the beauty of their dreams. — Eleanor Roosevelt",
+
+"The only true wisdom is in knowing you know nothing. — Socrates",
+
+"The successful warrior is the average man with laser-like focus. — Bruce Lee",
+
 ];
