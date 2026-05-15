@@ -1035,7 +1035,7 @@ setOracleHistory(updatedHistory);
 className="
 fixed
 left-8
-top-[20%]
+top-[14%]
 z-[70]
 w-[260px]
 hidden
