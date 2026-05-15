@@ -1101,10 +1101,6 @@ hidden xl:flex
 fixed
 left-6
 top-[20%]
-max-h-[60vh]
-overflow-y-auto
-pr-2
-...
 ">
     <div className="rounded-[28px] border border-white/10 bg-white/[0.03] backdrop-blur-2xl p-5 shadow-2xl">
 
@@ -1118,7 +1114,7 @@ pr-2
         </span>
       </div>
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 max-h-[52vh] overflow-y-auto pr-2">
         {oracleHistory.map((item, index) => (
           <div
             key={index}
