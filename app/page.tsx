@@ -916,7 +916,7 @@ setOracleHistory(updatedHistory);
 
       {/* MAIN */}
       <div
-        className={`relative z-[50] w-full max-w-6xl overflow-hidden flex flex-col items-center transition-all lg:pr-32 ${
+        className={`relative z-[50] w-full max-w-6xl overflow-hidden flex flex-col items-center scale-90 origin-top transition-all lg:pr-32 ${
           isAnimating
             ? "scale-95 blur-sm"
             : ""
