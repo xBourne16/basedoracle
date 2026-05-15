@@ -95,6 +95,24 @@ export default function Home() {
     };
   }, []);
 
+  // SHARE URL RESTORE
+useEffect(() => {
+  if (!walletAddress) return;
+
+  const today =
+    new Date()
+      .toISOString()
+      .split("T")[0];
+
+  const savedShare = localStorage.getItem(
+    `oracle_share_${walletAddress}_${today}`
+  );
+
+  if (savedShare) {
+    setShareUrl(savedShare);
+  }
+}, [walletAddress]);
+
   // Ses Durumu Değiştiğinde Elementi Güncelle
   useEffect(() => {
     if (audioRef.current) {
@@ -104,7 +122,7 @@ export default function Home() {
 
   // DAILY DATA LOAD
   useEffect(() => {
-    if (!walletAddress) return;
+  if (!walletAddress) return;
 
     const today =
       new Date().toISOString().split("T")[0];
