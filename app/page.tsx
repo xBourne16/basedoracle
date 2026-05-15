@@ -930,10 +930,10 @@ setOracleHistory(updatedHistory);
           ORACLE
         </h1>
 
-        <div className="relative w-full max-w-2xl bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-[50px] p-12 shadow-2xl md:-translate-x-12">
+        <div className="relative w-full max-w-2xl bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-[50px] p-10 shadow-2xl md:-translate-x-12">
           <div className="absolute top-10 left-12 w-10 h-[2px] bg-blue-600 shadow-[0_0_15px_rgba(37,99,235,1)]"></div>
 
-          <div className="min-h-[260px] flex flex-col items-center justify-center text-center">
+          <div className="min-h-[220px] flex flex-col items-center justify-center text-center">
             {/* DAILY TITLE */}
             {quote && (
               <span className="mb-6 text-[11px] uppercase tracking-[0.45em] text-blue-400 font-black italic">
@@ -1047,7 +1047,7 @@ setOracleHistory(updatedHistory);
             </div>
           )}
 
-          <div className="mt-10 flex justify-end relative z-[60]">
+          <div className="mt-6 flex justify-end relative z-[60]">
             <button
               onClick={handleAction}
               disabled={
