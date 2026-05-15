@@ -1037,7 +1037,7 @@ fixed
 left-8
 top-[20%]
 z-[70]
-w-[300px]
+w-[260px]
 hidden
 2xl:flex
 flex-col
@@ -1059,7 +1059,7 @@ flex-col
         {oracleHistory.slice(0, 3).map((item, index) => (
           <div
             key={index}
-            className="rounded-2xl border border-white/5 bg-black/20 p-5 hover:border-blue-500/30 transition-all"
+            className="rounded-2xl border border-white/5 bg-black/20 p-3 hover:border-blue-500/30 transition-all"
           >
             <div className="flex items-center justify-between mb-3">
               <span className="text-[10px] text-blue-400 uppercase tracking-[0.3em] font-bold">
@@ -1071,7 +1071,7 @@ flex-col
               </span>
             </div>
 
-            <p className="text-white/90 italic leading-relaxed text-[15px]">
+            <p className="text-white/90 italic leading-relaxed text-[12px]">
               "{item.quote}"
             </p>
 
