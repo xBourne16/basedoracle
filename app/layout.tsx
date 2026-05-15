@@ -6,7 +6,7 @@ import { Analytics } from "@vercel/analytics/react";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Zetta Oracle | Web3 Motivation",
+  title: "Based Oracle | Web3 Motivation",
   description: "Built in Bursa • Personalized blockchain quotes",
 };
 
