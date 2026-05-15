@@ -118,6 +118,10 @@ export default function Home() {
       localStorage.getItem(
         `oracle_lucky_${walletAddress}_${today}`
       );
+      const savedShareUrl =
+  localStorage.getItem(
+    `oracle_share_${walletAddress}_${today}`
+  );
 
     if (savedQuote) {
       setQuote(savedQuote);
@@ -126,6 +130,9 @@ export default function Home() {
     if (savedLucky) {
       setLuckyNumber(Number(savedLucky));
     }
+    if (savedShareUrl) {
+  setShareUrl(savedShareUrl);
+}
   }, [walletAddress]);
   // ORACLE HISTORY LOAD
 useEffect(() => {
@@ -487,8 +494,19 @@ const tweet = encodeURIComponent(
   `Consult your fate:\n${window.location.origin}`
 );
 
-setShareUrl(
-  `https://twitter.com/intent/tweet?text=${tweet}`
+const finalShareUrl =
+  `https://twitter.com/intent/tweet?text=${tweet}`;
+
+setShareUrl(finalShareUrl);
+
+const today =
+  new Date()
+    .toISOString()
+    .split("T")[0];
+
+localStorage.setItem(
+  `oracle_share_${walletAddress}_${today}`,
+  finalShareUrl
 );
 
       // DAILY QUOTE
@@ -571,11 +589,7 @@ localStorage.setItem(
 setOracleHistory(updatedHistory);
 
       // SAVE DAILY DATA
-      const today =
-        new Date()
-          .toISOString()
-          .split("T")[0];
-
+     
       localStorage.setItem(
         `oracle_quote_${walletAddress}_${today}`,
         dailyQuote
