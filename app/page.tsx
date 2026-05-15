@@ -47,6 +47,19 @@ export default function Home() {
     useState<number | null>(null);
     const [shareUrl, setShareUrl] =
   useState("");
+  useEffect(() => {
+  if (!walletAddress) return;
+
+  const today = new Date().toISOString().split("T")[0];
+
+  const savedShare = localStorage.getItem(
+    `oracle_share_${walletAddress}_${today}`
+  );
+
+  if (savedShare) {
+    setShareUrl(savedShare);
+  }
+}, [walletAddress]);
   const [streak, setStreak] =
   useState<number>(0);
   const [oracleHistory, setOracleHistory] = useState<
