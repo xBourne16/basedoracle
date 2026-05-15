@@ -1012,7 +1012,7 @@ setOracleHistory(updatedHistory);
 )}
             {quote &&
               luckyNumber && (
-                <div className="mt-6 flex justify-center relative z-[60]">
+                <div className="mt-6 flex flex-col items-center relative z-[60]">
                   <span className="text-[10px] uppercase tracking-[0.4em] text-white/30 mb-3 italic">
                     Your Lucky Number Today
                   </span>
