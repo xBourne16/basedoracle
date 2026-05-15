@@ -955,7 +955,7 @@ setOracleHistory(updatedHistory);
   </div>
 )}
             {/* SHARE PROPHECY */}
-{quote && txHash && (
+{quote && shareUrl && (
   <a
     href={shareUrl}
     target="_blank"
