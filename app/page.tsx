@@ -319,10 +319,23 @@ useEffect(() => {
     const eth = (window as any).ethereum;
 
     if (!eth) {
-      alert("No crypto wallet detected.");
-      return;
-    }
+  const currentUrl = window.location.href;
 
+  if (walletType === "metamask") {
+    window.location.href =
+      `https://metamask.app.link/dapp/${window.location.host}`;
+    return;
+  }
+
+  if (walletType === "coinbase") {
+    window.location.href =
+      `https://go.cb-w.com/dapp?cb_url=${encodeURIComponent(currentUrl)}`;
+    return;
+  }
+
+  alert("Open this site inside your wallet browser.");
+  return;
+}
     let provider: any = null;
 
     if (eth.providers?.length) {
