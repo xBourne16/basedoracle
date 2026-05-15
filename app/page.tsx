@@ -1056,7 +1056,7 @@ flex-col
       </div>
 
       <div className="flex flex-col gap-4">
-        {oracleHistory.map((item, index) => (
+        {oracleHistory.slice(0, 3).map((item, index) => (
           <div
             key={index}
             className="rounded-2xl border border-white/5 bg-black/20 p-5 hover:border-blue-500/30 transition-all"
