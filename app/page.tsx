@@ -690,7 +690,7 @@ setOracleHistory(updatedHistory);
   };
 
   return (
-    <main className="relative flex min-h-screen flex-col items-center justify-start pt-24 p-4 bg-[#020204] overflow-y-auto overflow-x-hidden selection:bg-blue-600/40">
+    <main className="relative flex min-h-screen overflow-hidden flex-col items-center justify-start pt-24 p-4 bg-[#020204] overflow-y-auto overflow-x-hidden selection:bg-blue-600/40">
       {/* WALLET MODAL */}
       {isModalOpen && (
         <div className="fixed inset-0 z-[2000] flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl">
@@ -916,7 +916,7 @@ setOracleHistory(updatedHistory);
 
       {/* MAIN */}
       <div
-        className={`relative z-[50] w-full max-w-6xl flex flex-col items-center transition-all lg:pr-32 ${
+        className={`relative z-[50] w-full max-w-6xl overflow-hidden flex flex-col items-center transition-all lg:pr-32 ${
           isAnimating
             ? "scale-95 blur-sm"
             : ""
@@ -1012,7 +1012,7 @@ setOracleHistory(updatedHistory);
 )}
             {quote &&
               luckyNumber && (
-                <div className="mt-10 flex flex-col items-center">
+                <div className="mt-6 flex justify-center relative z-[60]">
                   <span className="text-[10px] uppercase tracking-[0.4em] text-white/30 mb-3 italic">
                     Your Lucky Number Today
                   </span>
