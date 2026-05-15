@@ -877,7 +877,7 @@ setOracleHistory(updatedHistory);
             : ""
         }`}
       >
-        <h1 className="text-8xl md:text-[140px] font-black text-white leading-none tracking-tighter uppercase italic mb-16 drop-shadow-2xl select-none">
+        <h1 className="text-7xl md:text-[115px] font-black text-white leading-none tracking-tighter uppercase italic mb-16 drop-shadow-2xl select-none">
           BASED
           <span className="text-blue-600">
             .
