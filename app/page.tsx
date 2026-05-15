@@ -47,8 +47,6 @@ export default function Home() {
     useState<number | null>(null);
     const [shareUrl, setShareUrl] =
   useState("");
-  const [rarity, setRarity] =
-  useState("COMMON");
   const [streak, setStreak] =
   useState<number>(0);
   const [oracleHistory, setOracleHistory] = useState<
@@ -262,20 +260,6 @@ useEffect(() => {
 
     return (charSum % 999) + 1;
   };
-  const generateRarity = () => {
-  const random = Math.random();
-
-  if (random < 0.01)
-    return "LEGENDARY";
-
-  if (random < 0.05)
-    return "EPIC";
-
-  if (random < 0.15)
-    return "RARE";
-
-  return "COMMON";
-};
 
   const getStreakBadge = (days: number) => {
   if (days >= 30) return "ORACLE PRIME";
@@ -525,10 +509,6 @@ setShareUrl(
         );
 
       setLuckyNumber(number);
-      const prophecyRarity =
-  generateRarity();
-
-setRarity(prophecyRarity);
       // UPDATE STREAK
 const todayKey =
   new Date().toISOString().split("T")[0];
@@ -905,55 +885,10 @@ setOracleHistory(updatedHistory);
           ORACLE
         </h1>
 
-        <div
-  className={`relative w-full max-w-2xl
-
-  ${
-    rarity === "LEGENDARY"
-      ? "shadow-[0_0_80px_rgba(255,215,0,0.35)]"
-      : rarity === "EPIC"
-      ? "shadow-[0_0_70px_rgba(168,85,247,0.35)]"
-      : rarity === "RARE"
-      ? "shadow-[0_0_60px_rgba(59,130,246,0.35)]"
-      : "shadow-2xl"
-  }
-
-  bg-white/[0.03]
-  backdrop-blur-xl
-  border border-white/10
-  rounded-[50px]
-  p-16
-  md:-translate-x-12
-`}
->
+        <div className="relative w-full max-w-2xl bg-white/[0.03] backdrop-blur-xl border border-white/10 rounded-[50px] p-12 shadow-2xl md:-translate-x-12">
           <div className="absolute top-10 left-12 w-10 h-[2px] bg-blue-600 shadow-[0_0_15px_rgba(37,99,235,1)]"></div>
 
           <div className="min-h-[260px] flex flex-col items-center justify-center text-center">
-            {quote && (
-  <div className="mb-6">
-    <span
-      className={`
-      px-5 py-2 rounded-full
-      text-[10px]
-      font-black
-      tracking-[0.35em]
-      uppercase
-
-      ${
-        rarity === "LEGENDARY"
-          ? "bg-yellow-500/20 text-yellow-300 border border-yellow-400/40"
-          : rarity === "EPIC"
-          ? "bg-purple-500/20 text-purple-300 border border-purple-400/40"
-          : rarity === "RARE"
-          ? "bg-blue-500/20 text-blue-300 border border-blue-400/40"
-          : "bg-white/10 text-white/60 border border-white/10"
-      }
-    `}
-    >
-      ✦ {rarity} PROPHECY ✦
-    </span>
-  </div>
-)}
             {/* DAILY TITLE */}
             {quote && (
               <span className="mb-6 text-[11px] uppercase tracking-[0.45em] text-blue-400 font-black italic">
@@ -1096,12 +1031,18 @@ setOracleHistory(updatedHistory);
       </div>
 {/* ORACLE HISTORY PANEL */}
 {oracleHistory.length > 0 && (
-<div className="
-hidden xl:flex
+<div
+className="
 fixed
-left-6
+left-8
 top-[20%]
-">
+z-[70]
+w-[300px]
+hidden
+2xl:flex
+flex-col
+  "
+>
     <div className="rounded-[28px] border border-white/10 bg-white/[0.03] backdrop-blur-2xl p-5 shadow-2xl">
 
       <div className="flex items-center justify-between mb-6">
@@ -1114,7 +1055,7 @@ top-[20%]
         </span>
       </div>
 
-      <div className="flex flex-col gap-4 max-h-[52vh] overflow-y-auto pr-2">
+      <div className="flex flex-col gap-4">
         {oracleHistory.map((item, index) => (
           <div
             key={index}
