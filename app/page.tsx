@@ -1096,18 +1096,16 @@ setOracleHistory(updatedHistory);
       </div>
 {/* ORACLE HISTORY PANEL */}
 {oracleHistory.length > 0 && (
-<div
-className="
+<div className="
+hidden xl:flex
 fixed
-left-8
+left-6
 top-[20%]
-z-[70]
-w-[300px]
-hidden
-2xl:flex
-flex-col
-  "
->
+max-h-[60vh]
+overflow-y-auto
+pr-2
+...
+">
     <div className="rounded-[28px] border border-white/10 bg-white/[0.03] backdrop-blur-2xl p-5 shadow-2xl">
 
       <div className="flex items-center justify-between mb-6">
