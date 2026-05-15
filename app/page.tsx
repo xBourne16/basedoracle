@@ -1149,7 +1149,7 @@ flex-col
   </div>
 )}
       {/* FOOTER */}
-<footer className="fixed bottom-4 md:bottom-10 w-full px-6 md:px-12 flex justify-between items-end z-[40]">
+<footer className="hidden xl:flex fixed bottom-4 md:bottom-10 w-full px-6 md:px-12 flex justify-between items-end z-[40]">
 
   <div className="flex flex-col gap-4 group pointer-events-auto">
     <div className="flex flex-col gap-1 text-left">
