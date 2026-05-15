@@ -968,9 +968,14 @@ setOracleHistory(updatedHistory);
   </div>
 )}
             {/* SHARE PROPHECY */}
-{quote && shareUrl && (
+{quote && (shareUrl || oracleHistory[0]?.txHash) && (
   <a
-    href={shareUrl}
+    href={
+  shareUrl ||
+  `https://twitter.com/intent/tweet?text=${encodeURIComponent(
+    `🔮 BASED ORACLE PROPHECY 🔮\n\n“${quote}”\n\n✦ Lucky Number: ${luckyNumber}\n\n✦ Oracle TX:\nhttps://basescan.org/tx/${oracleHistory[0]?.txHash}\n\nConsult your fate:\n${window.location.origin}`
+  )}`
+}
     target="_blank"
     rel="noopener noreferrer"
     className="
