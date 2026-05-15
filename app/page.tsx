@@ -1051,7 +1051,7 @@ flex-col
         </h3>
 
         <span className="text-[10px] text-white/30 uppercase tracking-[0.3em]">
-          Last {oracleHistory.length} Prophecies
+          Last {Math.min(oracleHistory.length, 3)} Prophecies
         </span>
       </div>
 
